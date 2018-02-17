@@ -1,6 +1,11 @@
 <resources>
     <string name="app_name">ACW</string>
 
+    <string name="blank_TextView">Blank TextView String</string>
+
     <string name="puzzle_download_menu_text">Puzzle Download</string>
     <string name="highscore_menu_text">Highscores</string>
+
+    <string name="puzzleThumbnail_Description">ImageView that contains the preview of the puzzle to download</string>
+    <string name="puzzleDownloadState_Description">ImageView that shows if the puzzle has been downloaded</string>
 </resources>
