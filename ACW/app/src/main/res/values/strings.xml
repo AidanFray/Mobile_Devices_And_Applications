@@ -1,3 +1,6 @@
 <resources>
-    <string name="app_name">ACW - 08027</string>
+    <string name="app_name">ACW</string>
+
+    <string name="puzzle_download_menu_text">Puzzle Download</string>
+    <string name="highscore_menu_text">Highscores</string>
 </resources>
