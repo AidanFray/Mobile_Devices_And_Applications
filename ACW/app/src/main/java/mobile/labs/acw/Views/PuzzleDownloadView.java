@@ -10,6 +10,8 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import mobile.labs.acw.DownloadFullPuzzle;
+import mobile.labs.acw.Puzzle;
 import mobile.labs.acw.R;
 
 // Custom view that contains the value for the downloadable puzzles
@@ -24,16 +26,27 @@ public class PuzzleDownloadView extends LinearLayout implements View.OnClickList
 
     private Drawable mDownloadStatus_Drawable;
 
+    private View mNormalView;
+    private View mDownloadView;
+
     public PuzzleDownloadView(Context context) {
         super(context);
+        Setup();
         InflateNormalView(context);
         LoadViews();
     }
 
     public PuzzleDownloadView(Context context, AttributeSet attrs) {
         super(context, attrs);
+        Setup();
         InflateNormalView(context);
         LoadViews();
+    }
+
+    private void Setup() {
+        LayoutInflater inflater = LayoutInflater.from(getContext());
+        mNormalView = inflater.inflate(R.layout.puzzle_download_view, this, false);
+        mDownloadView =  inflater.inflate(R.layout.puzzle_download_progress_view, this, false);
     }
 
     private void LoadViews(){
@@ -56,23 +69,29 @@ public class PuzzleDownloadView extends LinearLayout implements View.OnClickList
     }
 
     private void InflateNormalView(Context context) {
-        LayoutInflater inflater = LayoutInflater.from(getContext());
-        View normalView =  inflater.inflate(R.layout.puzzle_download_view, this, false);
-        this.removeAllViews();
-        this.addView(normalView);
+        this.removeView(mDownloadView);
+        this.addView(mNormalView);
     }
 
     private void InflateDownloadView(Context context) {
-        LayoutInflater inflater = LayoutInflater.from(getContext());
-        View downloadView =  inflater.inflate(R.layout.puzzle_download_progress_view, this, false);
-        this.removeAllViews();
-        this.addView(downloadView);
+        this.removeView(mNormalView);
+        this.addView(mDownloadView);
     }
 
     @Override
     public void onClick(View pView) {
-        //toggleDownloadStatus();
         InflateDownloadView(getContext());
+
+        new DownloadFullPuzzle(new DownloadFullPuzzle.OnResultRecieved() {
+            @Override
+            public void onResult(Puzzle result) {
+
+                //Sets progress bar to done
+                //mDownloadProgress.setProgress(100);
+                InflateNormalView(getContext());
+                setDownloadStatus(true);
+            }
+        }).execute(String.valueOf(mPuzzleDescription.getText()));
     }
 
     public void setThumbnail(Drawable pIcon) {

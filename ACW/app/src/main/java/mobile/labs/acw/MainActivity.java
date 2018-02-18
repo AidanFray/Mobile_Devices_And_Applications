@@ -19,7 +19,7 @@ public class MainActivity extends AppCompatActivity {
     public void puzzleDownload_Button_OnClick(View pView){
         Log.i("MainActivity_LOG", "puzzleDownload_Button_OnClick() Clicked!");
 
-        Intent intent = new Intent(pView.getContext(), PuzzleDownload.class);
+        Intent intent = new Intent(pView.getContext(), PuzzleDownloadActivity.class);
         startActivity(intent);
     }
 
