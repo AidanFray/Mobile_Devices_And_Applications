@@ -12,9 +12,21 @@
 
         <LinearLayout
             android:id="@+id/puzzle_download_layout"
-            android:orientation="vertical"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <Space
+                android:layout_width="match_parent"
+                android:layout_height="100dp"
+                />
+
+            <ProgressBar
+                android:id="@+id/download_progess_bar"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
+                />
 
         </LinearLayout>
     </ScrollView>
