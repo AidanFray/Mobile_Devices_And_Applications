@@ -2,7 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="horizontal"
     android:layout_width="match_parent"
-    android:layout_height="50dp">
+    android:layout_height="@dimen/puzzleDownload_height">
 
     <ImageView
         android:id="@+id/puzzle_thumbnail_ImageView"
@@ -10,6 +10,7 @@
         android:layout_height="match_parent"
         android:layout_weight="1"
         android:layout_gravity="center"
+        android:layout_margin="@dimen/puzzledownload_thumbnail_margin"
         android:contentDescription="@string/puzzleThumbnail_Description"/>
 
     <TextView
@@ -22,8 +23,10 @@
 
     <ImageView
         android:id="@+id/puzzle_download_status_ImageView"
-        android:layout_weight="1"
         android:layout_width="0dp"
         android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:layout_gravity="center"
+        android:layout_margin="@dimen/puzzledownload_status_margin"
         android:contentDescription="@string/puzzleDownloadState_Description" />
 </LinearLayout>
