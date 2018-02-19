@@ -2,6 +2,7 @@ package mobile.labs.acw.Views;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
@@ -97,6 +98,9 @@ public class PuzzleDownloadView extends LinearLayout implements View.OnClickList
 
                     result.Save(getContext());
 
+                    //Gets the first image
+                    mThumbnail.setImageBitmap(result.getMiddlePhoto());
+
                     //Sets progress bar to done
                     InflateNormalView(getContext());
                     setDownloadStatus(true);
@@ -106,8 +110,8 @@ public class PuzzleDownloadView extends LinearLayout implements View.OnClickList
         }
     }
 
-    public void setThumbnail(Drawable pIcon) {
-        mThumbnail.setImageDrawable(pIcon);
+    public void setThumbnail(Bitmap pIcon) {
+        mThumbnail.setImageBitmap(pIcon);
     }
 
     public void setPuzzleDescription(String pDescription) {

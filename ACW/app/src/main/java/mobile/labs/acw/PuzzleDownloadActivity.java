@@ -1,7 +1,6 @@
 package mobile.labs.acw;
 
 import android.content.SharedPreferences;
-import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -18,10 +17,6 @@ import mobile.labs.acw.Views.PuzzleDownloadView;
 public class PuzzleDownloadActivity extends AppCompatActivity {
 
     LinearLayout mDownloadLayout;
-
-    //Temp placeholder
-    Drawable mStockThumnnail;
-
     private final String mBaseUrl = "http://www.simongrey.net/08027/slidingPuzzleAcw/";
     final String mPuzzleIndexUrl = "index.json";
 
@@ -32,21 +27,29 @@ public class PuzzleDownloadActivity extends AppCompatActivity {
         setTitle("Puzzle Download");
 
         mDownloadLayout = (LinearLayout)findViewById(R.id.puzzle_download_layout);
-        mStockThumnnail = getResources().getDrawable(R.mipmap.ic_launcher);
 
         //Downloads the JSON index for all the puzzles
         new PuzzlePreviewDownload().execute(mBaseUrl + mPuzzleIndexUrl);
     }
 
     //Adds the custom control containing the puzzle code
-    private void addDownloadPuzzle(String pDescription, Drawable pThumbnail) {
+    private void addDownloadPuzzle(String pDescription) {
         //Adds each custom view
         PuzzleDownloadView downloadRow = new PuzzleDownloadView(this);
 
+        Boolean downloaded = checkForDownloadedPuzzle(pDescription);
+
+        if (downloaded) {
+            Puzzle puzzle = new Puzzle(this, pDescription);
+            downloadRow.setThumbnail(puzzle.getMiddlePhoto());
+        }
+        else {
+            //downloadRow.setThumbnail(BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher));
+        }
+
         //Checks to see if it has been downloaded before
-        downloadRow.setDownloadStatus(checkForDownloadedPuzzle(pDescription));
+        downloadRow.setDownloadStatus(downloaded);
         downloadRow.setPuzzleDescription(pDescription);
-        downloadRow.setThumbnail(pThumbnail);
         mDownloadLayout.addView(downloadRow);
     }
 
@@ -64,7 +67,7 @@ public class PuzzleDownloadActivity extends AppCompatActivity {
             for (int i =0; i < jsonArray.length(); i++) {
 
                 //Adds the puzzle with the JSON string
-                addDownloadPuzzle(jsonArray.get(i).toString(), mStockThumnnail);
+                addDownloadPuzzle(jsonArray.get(i).toString());
             }
         } catch (JSONException e) {
             e.printStackTrace();
