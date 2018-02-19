@@ -62,8 +62,6 @@ public class DownloadFullPuzzle extends AsyncTask<String, String, Puzzle> {
         } catch (JSONException e) {
             Log.e("JSONException", "Error grabbing puzzle information: " + e.getMessage());
         }
-
-        //TODO: Take data from JSONArray and place in mPuzzleLayout
     }
     private void getPuzzleLayout() {
         JSONObject puzzle_layout = JSON.ReadFromURL(mBaseUrl + mPuzzleLayoutUrl + mLayoutName);

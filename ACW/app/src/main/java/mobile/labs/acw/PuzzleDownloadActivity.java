@@ -1,14 +1,17 @@
 package mobile.labs.acw;
 
+import android.content.SharedPreferences;
 import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.LinearLayout;
 import android.widget.Toast;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
 import mobile.labs.acw.JSON.JSON;
 import mobile.labs.acw.Views.PuzzleDownloadView;
 
@@ -39,6 +42,9 @@ public class PuzzleDownloadActivity extends AppCompatActivity {
     private void addDownloadPuzzle(String pDescription, Drawable pThumbnail) {
         //Adds each custom view
         PuzzleDownloadView downloadRow = new PuzzleDownloadView(this);
+
+        //Checks to see if it has been downloaded before
+        downloadRow.setDownloadStatus(checkForDownloadedPuzzle(pDescription));
         downloadRow.setPuzzleDescription(pDescription);
         downloadRow.setThumbnail(pThumbnail);
         mDownloadLayout.addView(downloadRow);
@@ -65,8 +71,14 @@ public class PuzzleDownloadActivity extends AppCompatActivity {
         }
     }
 
+    private Boolean checkForDownloadedPuzzle(String pPuzzleName) {
+
+        SharedPreferences preferences = getSharedPreferences("Puzzles", MODE_PRIVATE);
+        return preferences.getBoolean(pPuzzleName, false);
+    }
+
     //Puzzle download classes
-    public class PuzzlePreviewDownload extends AsyncTask<String, String, JSONObject> {
+    private class PuzzlePreviewDownload extends AsyncTask<String, String, JSONObject> {
 
         private JSONObject mJSON;
 
@@ -87,6 +99,5 @@ public class PuzzleDownloadActivity extends AppCompatActivity {
             }
         }
     }
-
 }
 

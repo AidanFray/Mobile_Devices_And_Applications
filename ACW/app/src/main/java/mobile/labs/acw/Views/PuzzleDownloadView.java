@@ -1,13 +1,13 @@
 package mobile.labs.acw.Views;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import mobile.labs.acw.DownloadFullPuzzle;
@@ -22,7 +22,6 @@ public class PuzzleDownloadView extends LinearLayout implements View.OnClickList
     private ImageView mDownloadStatus;
     private TextView mPuzzleDescription;
     private Boolean mDownloadBool;
-    private ProgressBar mDownloadProgress;
 
     private Drawable mDownloadStatus_Drawable;
 
@@ -46,24 +45,23 @@ public class PuzzleDownloadView extends LinearLayout implements View.OnClickList
     private void Setup() {
         LayoutInflater inflater = LayoutInflater.from(getContext());
         mNormalView = inflater.inflate(R.layout.puzzle_download_view, this, false);
-        mDownloadView =  inflater.inflate(R.layout.puzzle_download_progress_view, this, false);
+        mDownloadView = inflater.inflate(R.layout.puzzle_download_progress_view, this, false);
     }
 
-    private void LoadViews(){
+    private void LoadViews() {
 
         //Grabs all controls
-        mThumbnail = (ImageView)findViewById(R.id.puzzle_thumbnail_ImageView);
+        mThumbnail = (ImageView) findViewById(R.id.puzzle_thumbnail_ImageView);
         mThumbnail.setClickable(true);
         mThumbnail.setOnClickListener(this);
-        mDownloadStatus = (ImageView)findViewById(R.id.puzzle_download_status_ImageView);
+        mDownloadStatus = (ImageView) findViewById(R.id.puzzle_download_status_ImageView);
         mDownloadStatus.setImageDrawable(null);
         mDownloadStatus.setClickable(true);
         mDownloadStatus.setOnClickListener(this);
         mDownloadStatus_Drawable = getResources().getDrawable(R.drawable.download_status);
-        mPuzzleDescription = (TextView)findViewById(R.id.puzzle_description_TextView);
+        mPuzzleDescription = (TextView) findViewById(R.id.puzzle_description_TextView);
         mPuzzleDescription.setClickable(true);
         mPuzzleDescription.setOnClickListener(this);
-        mDownloadProgress = (ProgressBar)findViewById(R.id.puzzle_download_progess);
         mDownloadBool = false;
 
     }
@@ -79,37 +77,48 @@ public class PuzzleDownloadView extends LinearLayout implements View.OnClickList
     }
 
     @Override
-    public void onClick(View pView) {
-        InflateDownloadView(getContext());
+    public void onClick(final View pView) {
 
-        new DownloadFullPuzzle(new DownloadFullPuzzle.OnResultRecieved() {
-            @Override
-            public void onResult(Puzzle result) {
+        //Only allows download if the puzzle can be downloaded
+        if (!mDownloadBool) {
+            InflateDownloadView(getContext());
 
-                //Sets progress bar to done
-                //mDownloadProgress.setProgress(100);
-                InflateNormalView(getContext());
-                setDownloadStatus(true);
-            }
-        }).execute(String.valueOf(mPuzzleDescription.getText()));
+            new DownloadFullPuzzle(new DownloadFullPuzzle.OnResultRecieved() {
+                @Override
+                public void onResult(Puzzle result) {
+
+                    //Saves the presence of the puzzle download
+                    SharedPreferences.Editor editor
+                            = getContext().getSharedPreferences("Puzzles", Context.MODE_PRIVATE).edit();
+
+                    String puzzleName = String.valueOf(mPuzzleDescription.getText());
+                    editor.putBoolean(puzzleName, true);
+                    editor.commit();
+
+                    result.Save(getContext());
+
+                    //Sets progress bar to done
+                    InflateNormalView(getContext());
+                    setDownloadStatus(true);
+
+                }
+            }).execute(String.valueOf(mPuzzleDescription.getText()));
+        }
     }
 
     public void setThumbnail(Drawable pIcon) {
         mThumbnail.setImageDrawable(pIcon);
     }
+
     public void setPuzzleDescription(String pDescription) {
         mPuzzleDescription.setText(pDescription);
     }
+
     public void setDownloadStatus(Boolean pState) {
         mDownloadBool = pState;
         refreshDownloadStatusImage();
     }
-    public void toggleDownloadStatus() {
 
-        //A toggle for the boolean value
-        mDownloadBool = !mDownloadBool;
-        refreshDownloadStatusImage();
-    }
     private void refreshDownloadStatusImage() {
         if (mDownloadBool) {
             mDownloadStatus.setImageDrawable(mDownloadStatus_Drawable);
@@ -117,5 +126,4 @@ public class PuzzleDownloadView extends LinearLayout implements View.OnClickList
             mDownloadStatus.setImageDrawable(null);
         }
     }
-
 }
