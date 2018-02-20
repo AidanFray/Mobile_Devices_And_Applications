@@ -80,19 +80,21 @@ public class Puzzle {
                 }
             }
 
-            float stroke_width = 25f;
+            float max_size = length * noOfTiles;
+            float stroke_weight = 15f; //Smaller value means thicker bar
+
+            //Stops larger images from having thinner bars and dynamically creates it
+            stroke_weight = max_size / (stroke_weight);
 
             //Adds a border
             Paint paint = new Paint();
             paint.setColor(Color.BLACK);
-            paint.setStrokeWidth(stroke_width);
+            paint.setStrokeWidth(stroke_weight);
 
-            float max_size = length * noOfTiles;
             canvas.drawLine(0, 0, max_size, 0, paint);                      //Top line
             canvas.drawLine(0, 0, 0, max_size, paint);                      //Left line
             canvas.drawLine(max_size, 0, max_size, max_size, paint);        //Right line
             canvas.drawLine(0, max_size, max_size, max_size, paint);        //Bottom Line
-
 
             return cs;
         } catch (Exception e) {
