@@ -113,16 +113,13 @@ public class PuzzleDownloadView extends LinearLayout implements View.OnClickList
     public void setThumbnail(Bitmap pIcon) {
         mThumbnail.setImageBitmap(pIcon);
     }
-
     public void setPuzzleDescription(String pDescription) {
         mPuzzleDescription.setText(pDescription);
     }
-
     public void setDownloadStatus(Boolean pState) {
         mDownloadBool = pState;
         refreshDownloadStatusImage();
     }
-
     private void refreshDownloadStatusImage() {
         if (mDownloadBool) {
             mDownloadStatus.setImageDrawable(mDownloadStatus_Drawable);

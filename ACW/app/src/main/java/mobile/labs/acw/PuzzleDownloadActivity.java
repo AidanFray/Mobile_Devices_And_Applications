@@ -1,6 +1,7 @@
 package mobile.labs.acw;
 
 import android.content.SharedPreferences;
+import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -11,9 +12,9 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import mobile.labs.acw.CustomViews.PuzzleDownloadView;
 import mobile.labs.acw.JSON.JSON;
 import mobile.labs.acw.Puzzle_Class.Puzzle;
-import mobile.labs.acw.CustomViews.PuzzleDownloadView;
 
 public class PuzzleDownloadActivity extends AppCompatActivity {
 
@@ -45,7 +46,7 @@ public class PuzzleDownloadActivity extends AppCompatActivity {
             downloadRow.setThumbnail(puzzle.mPuzzleThumbnail);
         }
         else {
-            //downloadRow.setThumbnail(BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher));
+            downloadRow.setThumbnail(BitmapFactory.decodeResource(getResources(), R.drawable.blank_puzzle));
         }
 
         //Checks to see if it has been downloaded before
@@ -67,8 +68,13 @@ public class PuzzleDownloadActivity extends AppCompatActivity {
             //Loops through each value and add to to the array
             for (int i =0; i < jsonArray.length(); i++) {
 
+                String name = jsonArray.get(i).toString();
+
+                //Grabs the bit before the filename
+                name = name.split(".json")[0];
+
                 //Adds the puzzle with the JSON string
-                addDownloadPuzzle(jsonArray.get(i).toString());
+                addDownloadPuzzle(name);
             }
         } catch (JSONException e) {
             e.printStackTrace();

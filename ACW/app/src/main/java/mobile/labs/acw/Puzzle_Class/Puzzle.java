@@ -4,6 +4,8 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
 import android.util.Log;
 
 import java.io.File;
@@ -77,6 +79,21 @@ public class Puzzle {
                     }
                 }
             }
+
+            float stroke_width = 25f;
+
+            //Adds a border
+            Paint paint = new Paint();
+            paint.setColor(Color.BLACK);
+            paint.setStrokeWidth(stroke_width);
+
+            float max_size = length * noOfTiles;
+            canvas.drawLine(0, 0, max_size, 0, paint);                      //Top line
+            canvas.drawLine(0, 0, 0, max_size, paint);                      //Left line
+            canvas.drawLine(max_size, 0, max_size, max_size, paint);        //Right line
+            canvas.drawLine(0, max_size, max_size, max_size, paint);        //Bottom Line
+
+
             return cs;
         } catch (Exception e) {
             Log.i("CONSOLE", "Error [Puzzle.createThumbnail]:" + e.getMessage());
