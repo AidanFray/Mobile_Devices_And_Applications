@@ -43,7 +43,7 @@ public class PuzzleDownloadActivity extends AppCompatActivity {
 
         if (downloaded) {
             Puzzle puzzle = new Puzzle(this, pDescription);
-            downloadRow.setThumbnail(puzzle.mPuzzleThumbnail);
+            downloadRow.setThumbnail(puzzle.getPuzzleThumbnail());
         }
         else {
             downloadRow.setThumbnail(BitmapFactory.decodeResource(getResources(), R.drawable.blank_puzzle));
@@ -77,7 +77,7 @@ public class PuzzleDownloadActivity extends AppCompatActivity {
                 addDownloadPuzzle(name);
             }
         } catch (JSONException e) {
-            e.printStackTrace();
+            Logging.Exception(e);
         }
     }
 

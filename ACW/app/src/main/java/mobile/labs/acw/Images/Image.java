@@ -7,6 +7,8 @@ import java.io.IOException;
 import java.net.URL;
 import java.net.URLConnection;
 
+import mobile.labs.acw.Logging;
+
 public class Image {
 
     public static Bitmap DownloadFromURL(String url) {
@@ -18,7 +20,7 @@ public class Image {
             return BitmapFactory.decodeStream(connection.getInputStream());
 
         } catch (IOException e){
-            e.printStackTrace();
+            Logging.Exception(e);
             return null;
         }
     }

@@ -6,7 +6,6 @@ import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.util.Log;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -17,12 +16,34 @@ import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Puzzle {
-    public String mName;
-    public List<Row> mInitialPositions;
-    public List<Row> mPuzzlesImages;
-    public Bitmap mPuzzleThumbnail;
+import mobile.labs.acw.Logging;
 
+//TODO: MetaData needs to be saved as well so puzzles can be sorted and filtered
+// This can be done with a database and it will be easy to store and retrieve data
+
+public class Puzzle {
+
+    //Member variables
+    private String mName;
+    private List<Row> mInitialPositions;
+    private List<Row> mPuzzlesImages;
+    private Bitmap mPuzzleThumbnail;
+
+    //Accessors
+    public String getName() {
+        return mName;
+    }
+    public List<Row> getInitialPositions() {
+        return mInitialPositions;
+    }
+    public List<Row> getPuzzlesImages() {
+        return mPuzzlesImages;
+    }
+    public Bitmap getPuzzleThumbnail() {
+        return mPuzzleThumbnail;
+    }
+
+    //Literals
     private final String mInitialPosFileName = "initial_positions.dat";
     private final String mImagesFileName = "imagesList.dat";
 
@@ -39,15 +60,15 @@ public class Puzzle {
     }
 
     //Used to patch together all images into a thumbnail
-    private Bitmap createThumbnail() {
+    private Bitmap createThumbnail(Context context) {
 
         try {
-            int noOfTiles = mPuzzlesImages.get(0).mElements.size();
+            int noOfTiles = mPuzzlesImages.get(0).getElements().size();
 
             //Square so height and width are the same
             int length = 1;
 
-            List<Bitmap> row = mPuzzlesImages.get(0).mElements;
+            List<Bitmap> row = mPuzzlesImages.get(0).getElements();
             for (int i = 0; i < row.size(); i++) {
 
                 Bitmap image = row.get(i);
@@ -65,17 +86,20 @@ public class Puzzle {
 
             for (int y = 0; y < mPuzzlesImages.size(); y++) {
 
-                List<Bitmap> images = mPuzzlesImages.get(y).mElements;
+                List<Bitmap> images = mPuzzlesImages.get(y).getElements();
 
                 for (int x = 0; x < images.size(); x++) {
                     Bitmap bmp = images.get(x);
 
+                    float width = x * length;
+                    float height = y * length;
+
                     //Skips the empty square
                     if (bmp != null) {
-                        float width = x * length;
-                        float height = y * length;
-
                         canvas.drawBitmap(bmp, width, height, null);
+                    }
+                    else {
+                        //TODO put blank value here
                     }
                 }
             }
@@ -90,6 +114,7 @@ public class Puzzle {
             Paint paint = new Paint();
             paint.setColor(Color.BLACK);
             paint.setStrokeWidth(stroke_weight);
+            paint.setAntiAlias(true);
 
             canvas.drawLine(0, 0, max_size, 0, paint);                      //Top line
             canvas.drawLine(0, 0, 0, max_size, paint);                      //Left line
@@ -98,7 +123,7 @@ public class Puzzle {
 
             return cs;
         } catch (Exception e) {
-            Log.i("CONSOLE", "Error [Puzzle.createThumbnail]:" + e.getMessage());
+            Logging.Exception(e);
         }
         return null;
     }
@@ -121,9 +146,9 @@ public class Puzzle {
                 Row row = mPuzzlesImages.get(i);
                 Row posRow = mInitialPositions.get(i);
 
-                for (int j = 0; j < row.mElements.size(); j++) {
-                    String fileName = (String) posRow.mElements.get(j);
-                    Bitmap bmp = (Bitmap) row.mElements.get(j);
+                for (int j = 0; j < row.getElements().size(); j++) {
+                    String fileName = (String) posRow.getElements().get(j);
+                    Bitmap bmp = (Bitmap) row.getElements().get(j);
 
                     //Saves all the images
                     if (bmp != null && !fileName.equals("empty")) {
@@ -134,12 +159,12 @@ public class Puzzle {
             }
 
             //Saves the thumbnail
-            Bitmap bmp = createThumbnail();
+            Bitmap bmp = createThumbnail(context);
             SaveImage(imageDir.getAbsolutePath() + "/" + "Thumbnail.png", bmp);
             mPuzzleThumbnail = bmp;
 
         } catch (Exception e) {
-            e.printStackTrace();
+            Logging.Exception(e);
         }
     }
     private void SaveImage(String filePath, Bitmap image) {
@@ -151,7 +176,7 @@ public class Puzzle {
             stream.close();
 
         } catch (IOException e) {
-            Log.i("CONSOLE", "Error: Puzzle.createThumbnail" + e);
+            Logging.Exception(e);
         }
     }
     private void SaveObject(String filePath, Object object) {
@@ -163,7 +188,7 @@ public class Puzzle {
             objStream.writeObject(object);
             objStream.close();
         } catch (IOException e) {
-            Log.i("CONSOLE", "Error[Puzzle.SaveObject]: " + e.getMessage());
+            Logging.Exception(e);
         }
 
     }
@@ -177,7 +202,7 @@ public class Puzzle {
 
         try {
             //Grabs the initial positions as an object
-            mInitialPositions = (List<Row>)LoadObject(layoutDir.getAbsolutePath() + "/" + mInitialPosFileName);
+            mInitialPositions = (List<Row>) LoadObject(layoutDir.getAbsolutePath() + "/" + mInitialPosFileName);
 
             //Loops round the positions to grab the images
             mPuzzlesImages = new ArrayList<>();
@@ -187,15 +212,15 @@ public class Puzzle {
                 Row<Bitmap> imageRow = new Row<>();
 
                 //Loops round each element in the rows
-                for (int j = 0; j < row.mElements.size(); j++) {
+                for (int j = 0; j < row.getElements().size(); j++) {
 
-                    String rowValue = (String) row.mElements.get(j);
+                    String rowValue = (String) row.getElements().get(j);
 
                     if (!rowValue.equals("empty")) {
                         String filePath = imageDir.getAbsolutePath() + "/" + rowValue + ".png";
-                        imageRow.Add(LoadImage(filePath));
+                        imageRow.add(LoadImage(filePath));
                     } else {
-                        imageRow.Add(null);
+                        imageRow.add(null);
                     }
                 }
                 mPuzzlesImages.add(imageRow);
@@ -205,7 +230,7 @@ public class Puzzle {
             mPuzzleThumbnail = LoadImage(imageDir.getAbsolutePath() + "/Thumbnail.png");
 
         } catch (Exception e) {
-            e.printStackTrace();
+           Logging.Exception(e);
         }
     }
     private Bitmap LoadImage(String filePath) {
@@ -214,7 +239,7 @@ public class Puzzle {
             FileInputStream fileStream = new FileInputStream(filePath);
             return BitmapFactory.decodeStream(fileStream);
         } catch (Exception e) {
-            Log.i("CONSOLE", "Error [Puzzle.LoadImage]: " + e.getMessage());
+            Logging.Exception(e);
         }
         return null;
     }
@@ -227,12 +252,12 @@ public class Puzzle {
                 objectInputStream.close();
                 return obj;
             } catch (Exception e) {
-                Log.i("CONSOLE", "Error [Puzzle.LoadObject]: " + e.getMessage());
+                Logging.Exception(e);
             } finally {
                 objectInputStream.close();
             }
         } catch (IOException e) {
-            Log.i("CONSOLE", "Error [Puzzle.LoadObject]: " + e.getMessage());
+            Logging.Exception(e);
         }
         return null;
     }

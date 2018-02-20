@@ -5,13 +5,15 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import mobile.labs.acw.Logging;
+
 //Class used to hold the information on the puzzle layout
 //It supports string and images
 public class Row<T> implements Serializable{
 
-    public List<T> mElements = new ArrayList<>();
-
-    public Row() {
+    private List<T> mElements = new ArrayList<>();
+    public List<T> getElements() {
+        return mElements;
     }
 
     public Row(T... args) {
@@ -22,17 +24,18 @@ public class Row<T> implements Serializable{
         }
     }
 
-    public void Add(T value) {
+    public void add(T value) {
         mElements.add(value);
     }
 
+    //Methods that allow the object to be saved and loaded using Object Reader/Writer
     private void writeObject(java.io.ObjectOutputStream out) {
         try{
             for (int i = 0; i < mElements.size(); i++) {
                 out.writeObject(mElements.get(i));
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            Logging.Exception(e);
         }
     }
     private void readObject(java.io.ObjectInputStream in) {
@@ -45,7 +48,7 @@ public class Row<T> implements Serializable{
                 mElements.add(val);
             } while(val != null);
          } catch (Exception e){
-            e.printStackTrace();
+            Logging.Exception(e);
         }
     }
     private void readObjectNoData() {

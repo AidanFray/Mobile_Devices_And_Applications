@@ -11,6 +11,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import mobile.labs.acw.Logging;
 import mobile.labs.acw.Puzzle_Class.DownloadFullPuzzle;
 import mobile.labs.acw.Puzzle_Class.Puzzle;
 import mobile.labs.acw.R;
@@ -45,8 +46,13 @@ public class PuzzleDownloadView extends LinearLayout implements View.OnClickList
 
     private void Setup() {
         LayoutInflater inflater = LayoutInflater.from(getContext());
-        mNormalView = inflater.inflate(R.layout.puzzle_download_view, this, false);
-        mDownloadView = inflater.inflate(R.layout.puzzle_download_progress_view, this, false);
+
+        try {
+            mNormalView = inflater.inflate(R.layout.puzzle_download_view, this, false);
+            mDownloadView = inflater.inflate(R.layout.puzzle_download_progress_view, this, false);
+        } catch (Exception e) {
+            Logging.Exception(e);
+        }
     }
 
     private void LoadViews() {
@@ -99,7 +105,7 @@ public class PuzzleDownloadView extends LinearLayout implements View.OnClickList
                     result.Save(getContext());
 
                     //Gets the first image
-                    mThumbnail.setImageBitmap(result.mPuzzleThumbnail);
+                    mThumbnail.setImageBitmap(result.getPuzzleThumbnail());
 
                     //Sets progress bar to done
                     InflateNormalView(getContext());

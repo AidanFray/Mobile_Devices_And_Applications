@@ -2,7 +2,6 @@ package mobile.labs.acw.Puzzle_Class;
 
 import android.graphics.Bitmap;
 import android.os.AsyncTask;
-import android.util.Log;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -13,6 +12,7 @@ import java.util.List;
 
 import mobile.labs.acw.Images.Image;
 import mobile.labs.acw.JSON.JSON;
+import mobile.labs.acw.Logging;
 
 public class DownloadFullPuzzle extends AsyncTask<String, String, Puzzle> {
 
@@ -60,7 +60,7 @@ public class DownloadFullPuzzle extends AsyncTask<String, String, Puzzle> {
             mLayoutName = (String)puzzle_info.get("layout");
             mPictureSetName = (String)puzzle_info.get("PictureSet");
         } catch (JSONException e) {
-            Log.e("JSONException", "Error grabbing puzzle information: " + e.getMessage());
+            Logging.Exception(e);
         }
     }
     private void getPuzzleLayout() {
@@ -76,13 +76,13 @@ public class DownloadFullPuzzle extends AsyncTask<String, String, Puzzle> {
                 //Loops through the values and creates a new row
                 Row<String> newRow = new Row<>();
                 for (int j = 0; j < row.length() ; j++) {
-                    newRow.Add((String)row.get(j));
+                    newRow.add((String)row.get(j));
                 }
                 mPuzzleLayout.add(newRow);
             }
 
         } catch (JSONException e) {
-            Log.e("JSONException", "Error grabbing puzzle layout: " + e.getMessage());
+            Logging.Exception(e);
         }
     }
     private void getPuzzleImages() {
@@ -94,18 +94,18 @@ public class DownloadFullPuzzle extends AsyncTask<String, String, Puzzle> {
 
             //New row being created
             Row<Bitmap> imageRow = new Row<>();
-            for (int j = 0; j < row.mElements.size(); j++) {
-                String fileName = (String)row.mElements.get(j);
+
+            for (int j = 0; j < row.getElements().size(); j++) {
+                String fileName = (String)row.getElements().get(j);
 
                 //Grabs the image from URL
                 if (!fileName.equals("empty")) {
                     Bitmap image = Image.DownloadFromURL(mBaseUrl + mPuzzleImageUrl + mPictureSetName + "/" + fileName + ".jpg");
-                    imageRow.mElements.add(image);
+                    imageRow.getElements().add(image);
                 } else{
                     //Adds a blank position
-                    imageRow.mElements.add(null);
+                    imageRow.add(null);
                 }
-
             }
             mPuzzleImages.add(imageRow);
         }

@@ -7,6 +7,8 @@ import java.io.InputStreamReader;
 import java.net.URL;
 import java.net.URLConnection;
 
+import mobile.labs.acw.Logging;
+
 public class JSON {
 
     public static JSONObject ReadFromURL(String url_sting) {
@@ -32,7 +34,7 @@ public class JSON {
             return new JSONObject(result);
 
         } catch (Exception e) {
-            e.printStackTrace();
+            Logging.Exception(e);
         }
         return null;
     }
