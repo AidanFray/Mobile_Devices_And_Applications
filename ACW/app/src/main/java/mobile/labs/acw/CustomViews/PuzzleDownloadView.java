@@ -1,4 +1,4 @@
-package mobile.labs.acw.Views;
+package mobile.labs.acw.CustomViews;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -11,8 +11,8 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import mobile.labs.acw.DownloadFullPuzzle;
-import mobile.labs.acw.Puzzle;
+import mobile.labs.acw.Puzzle_Class.DownloadFullPuzzle;
+import mobile.labs.acw.Puzzle_Class.Puzzle;
 import mobile.labs.acw.R;
 
 // Custom view that contains the value for the downloadable puzzles

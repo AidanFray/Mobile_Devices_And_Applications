@@ -12,7 +12,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import mobile.labs.acw.JSON.JSON;
-import mobile.labs.acw.Views.PuzzleDownloadView;
+import mobile.labs.acw.Puzzle_Class.Puzzle;
+import mobile.labs.acw.CustomViews.PuzzleDownloadView;
 
 public class PuzzleDownloadActivity extends AppCompatActivity {
 

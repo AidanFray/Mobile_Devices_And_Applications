@@ -15,7 +15,7 @@ public class MainActivity extends AppCompatActivity {
         setTitle("Menu");
     }
 
-    //Button_OnClick
+    //Button_OnClick methods
     public void puzzleDownload_Button_OnClick(View pView){
         Log.i("MainActivity_LOG", "puzzleDownload_Button_OnClick() Clicked!");
 

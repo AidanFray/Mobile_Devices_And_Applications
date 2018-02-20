@@ -1,4 +1,4 @@
-package mobile.labs.acw;
+package mobile.labs.acw.Puzzle_Class;
 
 import android.graphics.Bitmap;
 import android.os.AsyncTask;

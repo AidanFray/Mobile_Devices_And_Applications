@@ -1,4 +1,4 @@
-package mobile.labs.acw;
+package mobile.labs.acw.Puzzle_Class;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -15,8 +15,6 @@ import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-//TODO: Too much repeated code in Loading of images
-// -- Very similar to JSON loading of images
 public class Puzzle {
     public String mName;
     public List<Row> mInitialPositions;

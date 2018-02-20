@@ -1,4 +1,4 @@
-package mobile.labs.acw;
+package mobile.labs.acw.Puzzle_Class;
 
 import java.io.IOException;
 import java.io.Serializable;
