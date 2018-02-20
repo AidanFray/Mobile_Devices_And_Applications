@@ -99,7 +99,7 @@ public class PuzzleDownloadView extends LinearLayout implements View.OnClickList
                     result.Save(getContext());
 
                     //Gets the first image
-                    mThumbnail.setImageBitmap(result.getMiddlePhoto());
+                    mThumbnail.setImageBitmap(result.mPuzzleThumbnail);
 
                     //Sets progress bar to done
                     InflateNormalView(getContext());

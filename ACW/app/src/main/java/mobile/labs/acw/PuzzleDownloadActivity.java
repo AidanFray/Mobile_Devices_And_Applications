@@ -41,7 +41,7 @@ public class PuzzleDownloadActivity extends AppCompatActivity {
 
         if (downloaded) {
             Puzzle puzzle = new Puzzle(this, pDescription);
-            downloadRow.setThumbnail(puzzle.getMiddlePhoto());
+            downloadRow.setThumbnail(puzzle.mPuzzleThumbnail);
         }
         else {
             //downloadRow.setThumbnail(BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher));
