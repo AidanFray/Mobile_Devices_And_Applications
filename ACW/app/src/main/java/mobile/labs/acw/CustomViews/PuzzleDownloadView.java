@@ -3,6 +3,7 @@ package mobile.labs.acw.CustomViews;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
@@ -20,15 +21,19 @@ import mobile.labs.acw.R;
 // It contains a Thumbnail, Description and Tick to show if it has been downloaded or not
 public class PuzzleDownloadView extends LinearLayout implements View.OnClickListener {
 
-    private ImageView mThumbnail;
-    private ImageView mDownloadStatus;
-    private TextView mPuzzleDescription;
-    private Boolean mDownloadBool;
-
-    private Drawable mDownloadStatus_Drawable;
+    //Shared blank thumbnail. Static so each class doesn't keep a copy
+    private static Bitmap mBlankThumbnail = null;
+    private static Drawable mDownloadStatus_Drawable;
 
     private View mNormalView;
     private View mDownloadView;
+
+    private ImageView mThumbnail;
+    private ImageView mDownloadStatus;
+    private TextView mPuzzleDescription;
+
+    private Boolean mDownloadBool;
+
 
     public PuzzleDownloadView(Context context) {
         super(context);
@@ -46,6 +51,11 @@ public class PuzzleDownloadView extends LinearLayout implements View.OnClickList
 
     private void Setup() {
         LayoutInflater inflater = LayoutInflater.from(getContext());
+
+        //Loads in the thumbnail once
+        if (mBlankThumbnail == null) {
+            mBlankThumbnail = BitmapFactory.decodeResource(getResources(), R.drawable.blank_puzzle);
+        }
 
         try {
             mNormalView = inflater.inflate(R.layout.puzzle_download_view, this, false);
@@ -117,7 +127,13 @@ public class PuzzleDownloadView extends LinearLayout implements View.OnClickList
     }
 
     public void setThumbnail(Bitmap pIcon) {
-        mThumbnail.setImageBitmap(pIcon);
+
+        if (pIcon == null) {
+            mThumbnail.setImageBitmap(mBlankThumbnail);
+        }
+        else {
+            mThumbnail.setImageBitmap(pIcon);
+        }
     }
     public void setPuzzleDescription(String pDescription) {
         mPuzzleDescription.setText(pDescription);

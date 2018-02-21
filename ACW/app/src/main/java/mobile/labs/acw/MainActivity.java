@@ -14,9 +14,25 @@ public class MainActivity extends AppCompatActivity {
         setTitle("Menu");
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        System.gc();
+    }
+
+
     //Button_OnClick methods
     public void puzzleDownload_Button_OnClick(View pView){
         Intent intent = new Intent(pView.getContext(), PuzzleDownloadActivity.class);
+        startActivity(intent);
+    }
+    public void puzzleSolve_Button_OnClick(View pView) {
+        Intent intent = new Intent(pView.getContext(), PuzzleSolvingActivity.class);
         startActivity(intent);
     }
 

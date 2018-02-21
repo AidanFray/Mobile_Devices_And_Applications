@@ -34,6 +34,11 @@ public class Row<T> implements Serializable{
             for (int i = 0; i < mElements.size(); i++) {
                 out.writeObject(mElements.get(i));
             }
+
+            //Stream EOF
+            out.writeObject(new EOF());
+            out.flush();
+
         } catch (IOException e) {
             Logging.Exception(e);
         }
@@ -41,18 +46,29 @@ public class Row<T> implements Serializable{
     private void readObject(java.io.ObjectInputStream in) {
 
         mElements = new ArrayList<>();
+
         try{
-            T val = null;
+            Object val;
             do {
-                val = (T)in.readObject();
-                mElements.add(val);
-            } while(val != null);
-         } catch (Exception e){
+                val = in.readObject();
+
+                if (val.getClass() != EOF.class) {
+                    mElements.add((T)val);
+                }
+            } while(val.getClass() != EOF.class);
+
+
+        } catch (Exception e){
             Logging.Exception(e);
         }
+
     }
     private void readObjectNoData() {
 
     }
+
+
 }
+
+
 

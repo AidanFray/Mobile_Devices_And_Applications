@@ -1,7 +1,6 @@
 package mobile.labs.acw;
 
 import android.content.SharedPreferences;
-import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -46,7 +45,12 @@ public class PuzzleDownloadActivity extends AppCompatActivity {
             downloadRow.setThumbnail(puzzle.getPuzzleThumbnail());
         }
         else {
-            downloadRow.setThumbnail(BitmapFactory.decodeResource(getResources(), R.drawable.blank_puzzle));
+            try {
+                //Sets the thumbnail to a default photo
+                downloadRow.setThumbnail(null);
+            } catch (OutOfMemoryError e) {
+                new Logging<OutOfMemoryError>().Exception(e, e.getMessage());
+            }
         }
 
         //Checks to see if it has been downloaded before

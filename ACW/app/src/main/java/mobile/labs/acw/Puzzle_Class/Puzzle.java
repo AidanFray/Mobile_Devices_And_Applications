@@ -23,6 +23,8 @@ import mobile.labs.acw.Logging;
 
 public class Puzzle {
 
+    private final int compression_percentage = 100;
+
     //Member variables
     private String mName;
     private List<Row> mInitialPositions;
@@ -61,7 +63,6 @@ public class Puzzle {
 
     //Used to patch together all images into a thumbnail
     private Bitmap createThumbnail(Context context) {
-
         try {
             int noOfTiles = mPuzzlesImages.get(0).getElements().size();
 
@@ -121,6 +122,8 @@ public class Puzzle {
             canvas.drawLine(max_size, 0, max_size, max_size, paint);        //Right line
             canvas.drawLine(0, max_size, max_size, max_size, paint);        //Bottom Line
 
+            System.gc();
+
             return cs;
         } catch (Exception e) {
             Logging.Exception(e);
@@ -172,7 +175,7 @@ public class Puzzle {
         FileOutputStream stream = null;
         try {
             stream = new FileOutputStream(filePath);
-            image.compress(Bitmap.CompressFormat.PNG, 100, stream);
+            image.compress(Bitmap.CompressFormat.PNG, compression_percentage, stream);
             stream.close();
 
         } catch (IOException e) {
