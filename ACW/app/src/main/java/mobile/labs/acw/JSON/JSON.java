@@ -3,6 +3,7 @@ package mobile.labs.acw.JSON;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
+import java.io.FileReader;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.net.URLConnection;
@@ -32,6 +33,25 @@ public class JSON {
 
             String result = stringBuilder.toString();
             return new JSONObject(result);
+
+        } catch (Exception e) {
+            Logging.Exception(e);
+        }
+        return null;
+    }
+
+    public static JSONObject ReadFromFile(String filename) {
+
+        try {
+            StringBuilder sb = new StringBuilder();
+            BufferedReader stream = new BufferedReader(new FileReader(filename));
+
+            String line = stream.readLine();
+            while (line != null) {
+                sb.append(line);
+                line = stream.readLine();
+            }
+            return new JSONObject(sb.toString());
 
         } catch (Exception e) {
             Logging.Exception(e);
