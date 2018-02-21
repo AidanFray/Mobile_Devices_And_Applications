@@ -9,4 +9,7 @@
 
     <dimen name="puzzleDownload_height">50dp</dimen>
 
+    <dimen name="gridCustomBorder">10dp</dimen>
+    <dimen name="gridCustomBorderLineThickness">11dp</dimen>
+
 </resources>
