@@ -15,18 +15,13 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
+import java.util.ArrayList;
+import java.util.List;
 
 import mobile.labs.acw.CustomViews.PuzzleDownloadView;
 import mobile.labs.acw.JSON.JSON;
 import mobile.labs.acw.Puzzle_Class.Puzzle;
 
-
-//===============================================================================================//
-//TODO: Need to save the index file
-//TODO: Update the index file every hour?
-//  - Check last time it was saved and if it is longer than an hour re download
-//TODO: Too much work is being done on the main thread when adding all the custom controls??
-//===============================================================================================//
 
 public class PuzzleDownloadActivity extends AppCompatActivity {
 
@@ -45,11 +40,15 @@ public class PuzzleDownloadActivity extends AppCompatActivity {
 
         mDownloadLayout = (LinearLayout)findViewById(R.id.puzzle_download_layout);
 
-        if (!checkForDownlaodedPuzzleIndex()) {
+        if (checkIfPuzzleIndexNeedsDownload()) {
             //Downloads the JSON index for all the puzzles
             new PuzzlePreviewDownload().execute(mBaseUrl + mPuzzleIndexUrl);
         } else {
-            addAllPuzzles(JSON.ReadFromFile(getDir(mPuzzleIndexDir, MODE_PRIVATE).getAbsolutePath() + "/" + mPuzzleIndexLocalName));
+
+            String indexDir = getDir(mPuzzleIndexDir, MODE_PRIVATE).getAbsolutePath();
+
+            new CreateCustomDownloadViews().execute(
+                    JSON.ReadFromFile(indexDir + "/" + mPuzzleIndexLocalName));
         }
     }
 
@@ -74,65 +73,20 @@ public class PuzzleDownloadActivity extends AppCompatActivity {
         } catch (IOException e) {
             new Logging<IOException>().Exception(e, e.getMessage());
         }
-
     }
 
     /**
-     * Method that loops through all JSON values and adds them to the view
-     * This is also called when the AsyncTask has finished downloading
-     * @param jsonObject - Containing all the JSON objects
+     * Method called after the AsycTask has created all the custom download views. The views are
+     * then just simply added to the layout
+     * @param puzzleDownloadView - The final list of created views
      */
-    private void addAllPuzzles(JSONObject jsonObject) {
-
+    private void addAllViews(List<PuzzleDownloadView> puzzleDownloadView) {
         //Hides the loading bar and spacing
         mDownloadLayout.removeAllViews();
 
-        try {
-            JSONArray jsonArray = jsonObject.getJSONArray("PuzzleIndex");
-
-            //Loops through each value and add to to the array
-            for (int i =0; i < jsonArray.length(); i++) {
-
-                String name = jsonArray.get(i).toString();
-
-                //Grabs the bit before the filename
-                name = name.split(".json")[0];
-
-                //Adds the puzzle with the JSON string
-                addDownloadPuzzle(name);
-            }
-        } catch (Exception e) {
-            Logging.Exception(e);
+        for (PuzzleDownloadView view: puzzleDownloadView) {
+            mDownloadLayout.addView(view);
         }
-    }
-
-    /**
-     * Method that adds the custom control to the view
-     * @param pDescription - Puzzle Name
-     */
-    private void addDownloadPuzzle(String pDescription) {
-        //Adds each custom view
-        PuzzleDownloadView downloadRow = new PuzzleDownloadView(this);
-
-        Boolean downloaded = checkForDownloadedPuzzle(pDescription);
-
-        if (downloaded) {
-            Puzzle puzzle = new Puzzle(this, pDescription);
-            downloadRow.setThumbnail(puzzle.getPuzzleThumbnail());
-        }
-        else {
-            try {
-                //Sets the thumbnail to a default photo
-                downloadRow.setThumbnail(null);
-            } catch (OutOfMemoryError e) {
-                new Logging<OutOfMemoryError>().Exception(e, e.getMessage());
-            }
-        }
-
-        //Checks to see if it has been downloaded before
-        downloadRow.setDownloadStatus(downloaded);
-        downloadRow.setPuzzleDescription(pDescription);
-        mDownloadLayout.addView(downloadRow);
     }
 
     /**
@@ -147,12 +101,33 @@ public class PuzzleDownloadActivity extends AppCompatActivity {
         SharedPreferences preferences = getSharedPreferences("Puzzles", MODE_PRIVATE);
         return preferences.getBoolean(pPuzzleName, false);
     }
-    private Boolean checkForDownlaodedPuzzleIndex() {
+
+    /**
+     * Method that checks if the Index file needs a download. It checks for it's existence and
+     * when it was last modified. If it was last modifies an hour ago it re downloads
+     * @return - A boolean stating if it should be downloaded or not:
+     *      True    - Re-download
+     *      False   - Use saved version
+     */
+    private Boolean checkIfPuzzleIndexNeedsDownload() {
         File indexDir = getDir(mPuzzleIndexDir, Context.MODE_PRIVATE);
         File file = new File(indexDir.getAbsolutePath() +"/" + mPuzzleIndexLocalName);
-        return file.exists();
+        if (!file.exists()) return true;
+
+        //Grabs the last time the file was saved
+        long currentTime = System.currentTimeMillis();
+        long lastSaveTime = file.lastModified();
+        long difference = currentTime - lastSaveTime;
+
+        //3600000 is an hour in milli seconds
+        if (difference > 3600000) return true;
+        return false;
     }
 
+
+    /**
+     * AsyncTask that downloads the JSON index file
+     */
     private class PuzzlePreviewDownload extends AsyncTask<String, String, JSONObject> {
         /**
          * An Async task that deals with downloading of JSON from a provided URL
@@ -174,11 +149,75 @@ public class PuzzleDownloadActivity extends AppCompatActivity {
             }
             else {
                 PuzzleDownloadActivity.this.saveIndexFile(mJSON);
-                PuzzleDownloadActivity.this.addAllPuzzles(mJSON);
+                new CreateCustomDownloadViews().execute(mJSON);
             }
         }
+    }
 
-        private void saveIndex(JSONObject e) {}
+
+    /**
+     * AsyncTask that uses the index file to create a series of custom download views
+     */
+    private class CreateCustomDownloadViews extends AsyncTask<JSONObject, JSONObject, Void> {
+
+        //List that holds the created views
+        private List<PuzzleDownloadView> downloadViewList = new ArrayList<>();
+
+        @Override
+        protected Void doInBackground(JSONObject... json) {
+            createCustomViews(json[0]);
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+
+            //Adds all the created views to the window
+            addAllViews(downloadViewList);
+        }
+
+        /**
+         * Method that loops through all JSON values and adds them to the view
+         * This is also called when the AsyncTask has finished downloading
+         * @param jsonObject - Containing all the JSON objects
+         */
+        private void createCustomViews(JSONObject jsonObject) {
+
+            try {
+                JSONArray jsonArray = jsonObject.getJSONArray("PuzzleIndex");
+
+                //Loops through each value and add to to the array
+                for (int i =0; i < jsonArray.length(); i++) {
+
+                    String name = jsonArray.get(i).toString();
+
+                    //Grabs the bit before the filename
+                    name = name.split(".json")[0];
+
+                    //Adds each custom view
+                    PuzzleDownloadView downloadRow = new PuzzleDownloadView(PuzzleDownloadActivity.this);
+                    Boolean downloaded = checkForDownloadedPuzzle(name);
+
+                    if (downloaded) {
+                        Puzzle puzzle = new Puzzle(PuzzleDownloadActivity.this, name);
+                        downloadRow.setThumbnail(puzzle.getPuzzleThumbnail());
+                    }
+                    else {
+                        //Sets the thumbnail to a default photo
+                        downloadRow.setThumbnail(null);
+
+                    }
+
+                    //Checks to see if it has been downloaded before
+                    downloadRow.setDownloadStatus(downloaded);
+                    downloadRow.setPuzzleDescription(name);
+                    downloadViewList.add(downloadRow);
+                }
+            } catch (Exception e) {
+                Logging.Exception(e);
+            }
+        }
     }
 }
 
