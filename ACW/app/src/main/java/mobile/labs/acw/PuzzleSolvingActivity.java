@@ -2,7 +2,7 @@ package mobile.labs.acw;
 
 import android.app.Activity;
 import android.content.SharedPreferences;
-import android.graphics.Color;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.view.MotionEvent;
 import android.view.View;
@@ -11,6 +11,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import org.json.JSONArray;
@@ -21,6 +22,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import mobile.labs.acw.JSON.JSON;
+import mobile.labs.acw.Puzzle_Class.Puzzle;
+import mobile.labs.acw.Puzzle_Class.Row;
 
 public class PuzzleSolvingActivity extends Activity {
 
@@ -80,6 +83,25 @@ public class PuzzleSolvingActivity extends Activity {
      */
     private void onPuzzleSelection(AdapterView<?> adapterView, View view, int i, long l) {
         //TODO: Add code here that loads a puzzle selected into the grid
+
+        TextView textView = (TextView)view;
+        String puzzleName = textView.getText().toString();
+
+        //Loads the puzzle
+        Puzzle puzzle = new Puzzle(this, puzzleName);
+
+        //Puts the image into a linear list
+        List<Bitmap> imageList = new ArrayList<>();
+        for(Row row : puzzle.getPuzzlesImages()) {
+            //Gets a list of the images
+            List<Bitmap> images = row.getElements();
+
+            for(Bitmap image : images) {
+                imageList.add(image);
+            }
+        }
+
+        generateGrid(puzzle.getPuzzleSize(), imageList);
     }
 
 
@@ -98,7 +120,9 @@ public class PuzzleSolvingActivity extends Activity {
      *
      * @param size - Specifies the grids width and height (Size X Size)
      */
-    private void generateGrid(int size) {
+    private void generateGrid(int size, List<Bitmap> images) {
+
+        mGridLayout.removeAllViews();
 
         //Gets the total size of the grid
         float totalWidth = layoutSideWidth;
@@ -106,6 +130,8 @@ public class PuzzleSolvingActivity extends Activity {
         //Grabs the dimensions of each grid
         int stepSize = (int) (totalWidth / size);
 
+        //TODO: Issue loading in puzzle 157
+        int imageIndex = 0;
         boolean colour = false;
         for (int y = 0; y < size; y++) {
             for (int x = 0; x < size; x++) {
@@ -116,14 +142,12 @@ public class PuzzleSolvingActivity extends Activity {
                 view.setMinimumWidth(stepSize);
                 view.setMinimumHeight(stepSize);
 
-                view.setAdjustViewBounds(true);
-
-                //TODO: Temp - Puzzle loading code will go here
-                if (colour) {
-                    view.setBackgroundColor(Color.GRAY);
-                } else {
-                    view.setBackgroundColor(Color.DKGRAY);
+                //Adds all images to the imageViews
+                Bitmap bmp = images.get(imageIndex);
+                if (bmp != null) {
+                    view.setImageBitmap(bmp);
                 }
+                imageIndex++;
 
                 mGridLayout.addView(view);
 
@@ -133,8 +157,8 @@ public class PuzzleSolvingActivity extends Activity {
                 RelativeLayout.LayoutParams param
                         = (RelativeLayout.LayoutParams) view.getLayoutParams();
 
-                param.leftMargin = (int) (x * stepSize);
-                param.topMargin = (int) (y * stepSize);
+                param.leftMargin = (x * stepSize);
+                param.topMargin = (y * stepSize);
                 param.bottomMargin = 0;
                 param.rightMargin = 0;
 

@@ -30,19 +30,27 @@ public class Puzzle {
     private List<Row> mInitialPositions;
     private List<Row> mPuzzlesImages;
     private Bitmap mPuzzleThumbnail;
+    private int mPuzzleSize;
 
     //Accessors
     public String getName() {
         return mName;
     }
+
     public List<Row> getInitialPositions() {
         return mInitialPositions;
     }
+
     public List<Row> getPuzzlesImages() {
         return mPuzzlesImages;
     }
+
     public Bitmap getPuzzleThumbnail() {
         return mPuzzleThumbnail;
+    }
+
+    public int getPuzzleSize() {
+        return mPuzzleSize;
     }
 
     //Literals
@@ -97,8 +105,7 @@ public class Puzzle {
                     //Skips the empty square
                     if (bmp != null) {
                         canvas.drawBitmap(bmp, width, height, null);
-                    }
-                    else {
+                    } else {
                         //TODO put blank value here
                     }
                 }
@@ -169,6 +176,7 @@ public class Puzzle {
             Logging.Exception(e);
         }
     }
+
     private void SaveImage(String filePath, Bitmap image) {
 
         FileOutputStream stream = null;
@@ -181,6 +189,7 @@ public class Puzzle {
             Logging.Exception(e);
         }
     }
+
     private void SaveObject(String filePath, Object object) {
 
         try {
@@ -232,9 +241,13 @@ public class Puzzle {
             mPuzzleThumbnail = LoadImage(imageDir.getAbsolutePath() + "/Thumbnail.png");
 
         } catch (Exception e) {
-           Logging.Exception(e);
+            Logging.Exception(e);
         }
+
+        //Grabs the size of the puzzle
+        mPuzzleSize =  mPuzzlesImages.get(0).getElements().size();
     }
+
     private Bitmap LoadImage(String filePath) {
 
         try {
@@ -245,6 +258,7 @@ public class Puzzle {
         }
         return null;
     }
+
     private Object LoadObject(String filePath) {
         try {
             ObjectInputStream objectInputStream = null;
