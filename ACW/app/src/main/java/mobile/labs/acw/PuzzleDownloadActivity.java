@@ -27,10 +27,13 @@ public class PuzzleDownloadActivity extends AppCompatActivity {
 
     private LinearLayout mDownloadLayout;
 
-    private final String mBaseUrl = "http://www.simongrey.net/08027/slidingPuzzleAcw/";
-    private final String mPuzzleIndexUrl = "index.json";
-    private final String mPuzzleIndexLocalName = "index.dat";
-    private final String mPuzzleIndexDir = "Index";
+    //TODO: Move to a literal string class?? or put in strings.xml
+    public static final String mBaseUrl = "http://www.simongrey.net/08027/slidingPuzzleAcw/";
+    public static final String mPuzzleIndexUrl = "index.json";
+    public static final String mPuzzleIndexLocalName = "index.dat";
+    public static final String mPuzzleIndexDir = "Index";
+    public static final String mPuzzleSharedPreferences = "Puzzles";
+    public static final String mJSONArrayIndexID = "PuzzleIndex";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -98,7 +101,7 @@ public class PuzzleDownloadActivity extends AppCompatActivity {
      */
     private Boolean checkForDownloadedPuzzle(String pPuzzleName) {
 
-        SharedPreferences preferences = getSharedPreferences("Puzzles", MODE_PRIVATE);
+        SharedPreferences preferences = getSharedPreferences(mPuzzleSharedPreferences, MODE_PRIVATE);
         return preferences.getBoolean(pPuzzleName, false);
     }
 
@@ -185,7 +188,7 @@ public class PuzzleDownloadActivity extends AppCompatActivity {
         private void createCustomViews(JSONObject jsonObject) {
 
             try {
-                JSONArray jsonArray = jsonObject.getJSONArray("PuzzleIndex");
+                JSONArray jsonArray = jsonObject.getJSONArray(mJSONArrayIndexID);
 
                 //Loops through each value and add to to the array
                 for (int i =0; i < jsonArray.length(); i++) {

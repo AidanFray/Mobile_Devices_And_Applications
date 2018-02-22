@@ -1,5 +1,7 @@
 package mobile.labs.acw.JSON;
 
+import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
@@ -54,6 +56,24 @@ public class JSON {
             return new JSONObject(sb.toString());
 
         } catch (Exception e) {
+            Logging.Exception(e);
+        }
+        return null;
+    }
+
+    public static JSONArray GetJSONArray(JSONObject jsonObject, String id) {
+        try {
+            return jsonObject.getJSONArray(id);
+        } catch (JSONException e) {
+            Logging.Exception(e);
+        }
+        return null;
+    }
+
+    public static Object GetIndex(JSONArray array, int index) {
+        try {
+            return array.get(index);
+        } catch (JSONException e) {
             Logging.Exception(e);
         }
         return null;

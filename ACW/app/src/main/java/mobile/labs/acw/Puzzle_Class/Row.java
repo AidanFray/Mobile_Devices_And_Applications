@@ -66,8 +66,6 @@ public class Row<T> implements Serializable{
     private void readObjectNoData() {
 
     }
-
-
 }
 
 

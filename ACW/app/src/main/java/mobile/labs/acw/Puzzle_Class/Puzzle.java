@@ -47,7 +47,6 @@ public class Puzzle {
 
     //Literals
     private final String mInitialPosFileName = "initial_positions.dat";
-    private final String mImagesFileName = "imagesList.dat";
 
     //Custom constructor
     public Puzzle(String pName, List<Row> pInitialPositions, List<Row> pPuzzleImages) {
