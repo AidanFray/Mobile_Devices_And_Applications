@@ -18,6 +18,8 @@ import java.util.List;
 
 import mobile.labs.acw.Logging;
 
+
+//TODO: Puzzles are suspected to be non square in some cases
 //TODO: MetaData needs to be saved as well so puzzles can be sorted and filtered
 // This can be done with a database and it will be easy to store and retrieve data
 
@@ -30,7 +32,8 @@ public class Puzzle {
     private List<Row> mInitialPositions;
     private List<Row> mPuzzlesImages;
     private Bitmap mPuzzleThumbnail;
-    private int mPuzzleSize;
+    private int mPuzzleSizeX;
+    private int mPuzzleSizeY;
 
     //Accessors
     public String getName() {
@@ -49,18 +52,25 @@ public class Puzzle {
         return mPuzzleThumbnail;
     }
 
-    public int getPuzzleSize() {
-        return mPuzzleSize;
+    public int getPuzzleSizeX() {
+        return mPuzzleSizeX;
     }
+    public int getmPuzzleSizeY() { return mPuzzleSizeY; }
 
     //Literals
     private final String mInitialPosFileName = "initial_positions.dat";
 
     //Custom constructor
-    public Puzzle(String pName, List<Row> pInitialPositions, List<Row> pPuzzleImages) {
+    public Puzzle(String pName,
+                  List<Row> pInitialPositions,
+                  List<Row> pPuzzleImages,
+                  int pPuzzleSizeX,
+                  int pPuzzleSizeY) {
         mName = pName;
         mInitialPositions = pInitialPositions;
         mPuzzlesImages = pPuzzleImages;
+        mPuzzleSizeX = pPuzzleSizeX;
+        mPuzzleSizeY = pPuzzleSizeY;
     }
 
     //Load constructor
@@ -215,6 +225,9 @@ public class Puzzle {
             //Grabs the initial positions as an object
             mInitialPositions = (List<Row>) LoadObject(layoutDir.getAbsolutePath() + "/" + mInitialPosFileName);
 
+            mPuzzleSizeY = mInitialPositions.size();
+            mPuzzleSizeX = mInitialPositions.get(0).getElements().size();
+
             //Loops round the positions to grab the images
             mPuzzlesImages = new ArrayList<>();
             for (int i = 0; i < mInitialPositions.size(); i++) {
@@ -243,9 +256,6 @@ public class Puzzle {
         } catch (Exception e) {
             Logging.Exception(e);
         }
-
-        //Grabs the size of the puzzle
-        mPuzzleSize =  mPuzzlesImages.get(0).getElements().size();
     }
 
     private Bitmap LoadImage(String filePath) {

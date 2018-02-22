@@ -9,6 +9,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -29,6 +30,7 @@ public class PuzzleSolvingActivity extends Activity {
 
     //Layout's views
     private RelativeLayout mGridLayout;
+    private LinearLayout mMainLayout;
     List<ImageView> mGridElements = new ArrayList<>();
 
     private Spinner mPuzzleSpinner;
@@ -41,12 +43,14 @@ public class PuzzleSolvingActivity extends Activity {
 
     //Both sides of the layout are exactly the same
     private float layoutSideWidth = 0;
+    private float layoutSideHeight = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_puzzle_solving);
 
+        mMainLayout = (LinearLayout)findViewById(R.id.mainLayout);
         mGridLayout = (RelativeLayout)findViewById(R.id.gridLayout);
         mPuzzleSpinner = (Spinner)findViewById(R.id.puzzleSpinner);
 
@@ -64,7 +68,10 @@ public class PuzzleSolvingActivity extends Activity {
             @Override
             public void run() {
                 mGridLayout.getLayoutParams().height = mGridLayout.getWidth();
-                layoutSideWidth = mGridLayout.getWidth() - (getResources().getDimension(R.dimen.gridCustomBorder) * 2);
+
+                float  padding = (getResources().getDimension(R.dimen.gridCustomBorder) * 2);
+                layoutSideWidth = mGridLayout.getWidth() - padding;
+
                 controlSetup();
             }
         });
@@ -82,8 +89,6 @@ public class PuzzleSolvingActivity extends Activity {
      * @param l
      */
     private void onPuzzleSelection(AdapterView<?> adapterView, View view, int i, long l) {
-        //TODO: Add code here that loads a puzzle selected into the grid
-
         TextView textView = (TextView)view;
         String puzzleName = textView.getText().toString();
 
@@ -101,7 +106,7 @@ public class PuzzleSolvingActivity extends Activity {
             }
         }
 
-        generateGrid(puzzle.getPuzzleSize(), imageList);
+        generateGrid(puzzle.getPuzzleSizeX(), puzzle.getmPuzzleSizeY(), imageList);
     }
 
 
@@ -117,29 +122,28 @@ public class PuzzleSolvingActivity extends Activity {
 
     /**
      * Method that generates a grid of a specific size. Each element is an image view
-     *
-     * @param size - Specifies the grids width and height (Size X Size)
+     * @param sizeX - Number of tiles in the X axis
+     * @param sizeY - Number of tiles in the y axis
+     * @param images - Image list
      */
-    private void generateGrid(int size, List<Bitmap> images) {
+    private void generateGrid(int sizeX, int sizeY, List<Bitmap> images) {
+        //Re-sizes the grids height
 
+        mGridElements.clear();
         mGridLayout.removeAllViews();
 
-        //Gets the total size of the grid
-        float totalWidth = layoutSideWidth;
-
         //Grabs the dimensions of each grid
-        int stepSize = (int) (totalWidth / size);
+        int stepSize = (int) (layoutSideWidth / sizeX);
 
-        //TODO: Issue loading in puzzle 157
         int imageIndex = 0;
-        boolean colour = false;
-        for (int y = 0; y < size; y++) {
-            for (int x = 0; x < size; x++) {
+        for (int y = 0; y < sizeY; y++) {
+            for (int x = 0; x < sizeX; x++) {
                 ImageView view = new ImageView(this);
 
                 view.setMaxWidth(stepSize);
-                view.setMaxHeight(stepSize);
                 view.setMinimumWidth(stepSize);
+
+                view.setMaxHeight(stepSize);
                 view.setMinimumHeight(stepSize);
 
                 //Adds all images to the imageViews
@@ -149,9 +153,8 @@ public class PuzzleSolvingActivity extends Activity {
                 }
                 imageIndex++;
 
+                //view.setOnTouchListener(createOnTouch());
                 mGridLayout.addView(view);
-
-                view.setOnTouchListener(createOnTouch());
 
                 //Changes position
                 RelativeLayout.LayoutParams param
@@ -163,15 +166,12 @@ public class PuzzleSolvingActivity extends Activity {
                 param.rightMargin = 0;
 
                 mGridElements.add(view);
-
-                colour = !colour;
-            }
-
-            //Only alternates the colour is an even value
-            if (size % 2 == 0) {
-                colour = !colour;
             }
         }
+
+        //TODO: Why in the hell does this work??
+        mGridLayout.getLayoutParams().height = -5;
+
         mGridLayout.invalidate();
     }
 

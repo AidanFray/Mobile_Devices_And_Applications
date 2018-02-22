@@ -11,6 +11,7 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import mobile.labs.acw.Logging;
 import mobile.labs.acw.Puzzle_Class.DownloadFullPuzzle;
@@ -104,23 +105,27 @@ public class PuzzleDownloadView extends LinearLayout implements View.OnClickList
                 @Override
                 public void onResult(Puzzle result) {
 
-                    //Saves the presence of the puzzle download
-                    SharedPreferences.Editor editor
-                            = getContext().getSharedPreferences("Puzzles", Context.MODE_PRIVATE).edit();
+                    if (result != null) {
+                        //Saves the presence of the puzzle download
+                        SharedPreferences.Editor editor
+                                = getContext().getSharedPreferences("Puzzles", Context.MODE_PRIVATE).edit();
 
-                    String puzzleName = String.valueOf(mPuzzleDescription.getText());
-                    editor.putBoolean(puzzleName, true);
-                    editor.commit();
+                        String puzzleName = String.valueOf(mPuzzleDescription.getText());
+                        editor.putBoolean(puzzleName, true);
+                        editor.commit();
 
-                    result.Save(getContext());
+                        result.Save(getContext());
 
-                    //Gets the first image
-                    mThumbnail.setImageBitmap(result.getPuzzleThumbnail());
+                        //Gets the first image
+                        mThumbnail.setImageBitmap(result.getPuzzleThumbnail());
 
-                    //Sets progress bar to done
-                    InflateNormalView(getContext());
-                    setDownloadStatus(true);
-
+                        //Sets progress bar to done
+                        InflateNormalView(getContext());
+                        setDownloadStatus(true);
+                    }
+                    else {
+                        Toast.makeText(getContext(), "Error downloading puzzle", Toast.LENGTH_LONG).show();
+                    }
                 }
             }).execute(String.valueOf(mPuzzleDescription.getText()));
         }

@@ -33,6 +33,8 @@ public class DownloadFullPuzzle extends AsyncTask<String, String, Puzzle> {
     private String mPictureSetName;
     private List<Row> mPuzzleLayout = new ArrayList<>();
     private List<Row> mPuzzleImages = new ArrayList<>();
+    private int mPuzzleSizeX;
+    private int mPuzzleSizeY;
 
     @Override
     protected Puzzle doInBackground(String... args) {
@@ -42,7 +44,7 @@ public class DownloadFullPuzzle extends AsyncTask<String, String, Puzzle> {
         getPuzzleLayout();
         getPuzzleImages();
 
-        return new Puzzle(mPuzzleName, mPuzzleLayout, mPuzzleImages);
+        return new Puzzle(mPuzzleName, mPuzzleLayout, mPuzzleImages, mPuzzleSizeX, mPuzzleSizeY);
     }
 
     @Override
@@ -70,6 +72,8 @@ public class DownloadFullPuzzle extends AsyncTask<String, String, Puzzle> {
         try {
             layout_info = puzzle_layout.getJSONArray("layout");
 
+            mPuzzleSizeY = layout_info.length();
+
             for (int i = 0; i < layout_info.length() ; i++) {
                 JSONArray row = layout_info.getJSONArray(i);
 
@@ -78,6 +82,8 @@ public class DownloadFullPuzzle extends AsyncTask<String, String, Puzzle> {
                 for (int j = 0; j < row.length() ; j++) {
                     newRow.add((String)row.get(j));
                 }
+                mPuzzleSizeX = newRow.getElements().size();
+
                 mPuzzleLayout.add(newRow);
             }
 

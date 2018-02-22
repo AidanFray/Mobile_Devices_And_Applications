@@ -46,10 +46,9 @@ public class PuzzleDownloadActivity extends AppCompatActivity {
         if (checkIfPuzzleIndexNeedsDownload()) {
             //Downloads the JSON index for all the puzzles
             new PuzzlePreviewDownload().execute(mBaseUrl + mPuzzleIndexUrl);
-        } else {
-
+        }
+        else {
             String indexDir = getDir(mPuzzleIndexDir, MODE_PRIVATE).getAbsolutePath();
-
             new CreateCustomDownloadViews().execute(
                     JSON.ReadFromFile(indexDir + "/" + mPuzzleIndexLocalName));
         }
