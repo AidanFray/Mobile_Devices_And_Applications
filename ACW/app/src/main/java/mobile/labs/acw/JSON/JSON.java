@@ -21,7 +21,7 @@ public class JSON {
         try {
             URL url = new URL(url_sting);
             URLConnection connection = url.openConnection();
-            connection.setConnectTimeout(10);
+            connection.setConnectTimeout(1000);
             BufferedReader bufferedInputStream
                     = new BufferedReader(new InputStreamReader(connection.getInputStream()));
 

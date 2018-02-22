@@ -48,10 +48,27 @@ public class PuzzleDownloadActivity extends AppCompatActivity {
             new PuzzlePreviewDownload().execute(mBaseUrl + mPuzzleIndexUrl);
         }
         else {
-            String indexDir = getDir(mPuzzleIndexDir, MODE_PRIVATE).getAbsolutePath();
-            new CreateCustomDownloadViews().execute(
-                    JSON.ReadFromFile(indexDir + "/" + mPuzzleIndexLocalName));
+            loadIndexFile();
         }
+    }
+
+    /**
+     * TODO:
+     */
+    private void loadIndexFile() {
+        String indexDir = getDir(mPuzzleIndexDir, MODE_PRIVATE).getAbsolutePath();
+        new CreateCustomDownloadViews().execute(
+                JSON.ReadFromFile(indexDir + "/" + mPuzzleIndexLocalName));
+    }
+
+    /**
+     * TODO:
+     * @return
+     */
+    private File getFileIndexFile() {
+        File indexDir = getDir(mPuzzleIndexDir, Context.MODE_PRIVATE);
+        File file = new File(indexDir.getAbsolutePath() +"/" + mPuzzleIndexLocalName);
+        return file;
     }
 
     /**
@@ -112,20 +129,19 @@ public class PuzzleDownloadActivity extends AppCompatActivity {
      *      False   - Use saved version
      */
     private Boolean checkIfPuzzleIndexNeedsDownload() {
-        File indexDir = getDir(mPuzzleIndexDir, Context.MODE_PRIVATE);
-        File file = new File(indexDir.getAbsolutePath() +"/" + mPuzzleIndexLocalName);
-        if (!file.exists()) return true;
+
+        File puzzleIndex = getFileIndexFile();
+        if (!puzzleIndex.exists()) return true;
 
         //Grabs the last time the file was saved
         long currentTime = System.currentTimeMillis();
-        long lastSaveTime = file.lastModified();
+        long lastSaveTime = puzzleIndex.lastModified();
         long difference = currentTime - lastSaveTime;
 
         //3600000 is an hour in milli seconds
         if (difference > 3600000) return true;
         return false;
     }
-
 
     /**
      * AsyncTask that downloads the JSON index file
@@ -147,7 +163,13 @@ public class PuzzleDownloadActivity extends AppCompatActivity {
         protected void onPostExecute(JSONObject s) {
             //Displays an error message
             if (s == null) {
-                Toast.makeText(PuzzleDownloadActivity.this, "Error downloaing JSON puzzles", Toast.LENGTH_LONG).show();
+                mDownloadLayout.removeAllViews();
+                Toast.makeText(PuzzleDownloadActivity.this, "Error: No Connection!", Toast.LENGTH_LONG).show();
+
+                //If the file is cached
+                if (getFileIndexFile().exists()) {
+                    loadIndexFile();
+                }
             }
             else {
                 PuzzleDownloadActivity.this.saveIndexFile(mJSON);
@@ -155,7 +177,6 @@ public class PuzzleDownloadActivity extends AppCompatActivity {
             }
         }
     }
-
 
     /**
      * AsyncTask that uses the index file to create a series of custom download views

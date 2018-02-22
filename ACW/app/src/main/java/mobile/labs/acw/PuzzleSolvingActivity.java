@@ -179,11 +179,6 @@ public class PuzzleSolvingActivity extends Activity {
      * Method that displays the downloaded puzzles in the spinner at the bottom of the page
      */
     private void loadDownloadedPuzzles() {
-        //Use the index file
-        //  If      - the index file is not downloaded push the user to the downloads page?
-        //  Else    - use the list to search for downloaded puzzles
-        //      If      - there are not puzzles push the user to the downloads page
-        //      Else    - Places the downloaded puzzles in the spinner
 
         String puzzleIndexDir
                 = getDir(PuzzleDownloadActivity.mPuzzleIndexDir, MODE_PRIVATE).getAbsolutePath();
@@ -192,10 +187,10 @@ public class PuzzleSolvingActivity extends Activity {
 
         if (!indexFile.exists()) {
             showNeedToDownloadPuzzleToast();
+            return;
         }
 
         //Grabs the values from the json
-
         JSONObject index = JSON.ReadFromFile(indexFile.getAbsolutePath());
         JSONArray indexValues = JSON.GetJSONArray(index, PuzzleDownloadActivity.mJSONArrayIndexID);
 
@@ -217,6 +212,7 @@ public class PuzzleSolvingActivity extends Activity {
 
         if (downloadedPuzzles.size() == 0) {
             showNeedToDownloadPuzzleToast();
+            return;
         }
 
         //Adds the values to the spinner

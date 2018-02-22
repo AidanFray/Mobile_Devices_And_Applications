@@ -40,11 +40,16 @@ public class DownloadFullPuzzle extends AsyncTask<String, String, Puzzle> {
     protected Puzzle doInBackground(String... args) {
         mPuzzleName = args[0];
 
-        getPuzzleInfo(mPuzzleName);
-        getPuzzleLayout();
-        getPuzzleImages();
+        try {
+            getPuzzleInfo(mPuzzleName);
+            getPuzzleLayout();
+            getPuzzleImages();
 
-        return new Puzzle(mPuzzleName, mPuzzleLayout, mPuzzleImages, mPuzzleSizeX, mPuzzleSizeY);
+            return new Puzzle(mPuzzleName, mPuzzleLayout, mPuzzleImages, mPuzzleSizeX, mPuzzleSizeY);
+        } catch (Exception e) {
+            Logging.Exception(e);
+            return null;
+        }
     }
 
     @Override

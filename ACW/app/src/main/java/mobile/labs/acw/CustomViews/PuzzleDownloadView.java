@@ -124,7 +124,8 @@ public class PuzzleDownloadView extends LinearLayout implements View.OnClickList
                         setDownloadStatus(true);
                     }
                     else {
-                        Toast.makeText(getContext(), "Error downloading puzzle", Toast.LENGTH_LONG).show();
+                        InflateNormalView(getContext());
+                        Toast.makeText(getContext(), "Error downloading puzzle. No Connection!", Toast.LENGTH_LONG).show();
                     }
                 }
             }).execute(String.valueOf(mPuzzleDescription.getText()));
