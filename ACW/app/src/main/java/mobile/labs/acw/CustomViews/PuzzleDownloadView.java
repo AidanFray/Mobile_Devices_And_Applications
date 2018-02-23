@@ -13,7 +13,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import mobile.labs.acw.Logging;
+import mobile.labs.acw.ExceptionHandling.Logging;
 import mobile.labs.acw.Puzzle_Class.DownloadFullPuzzle;
 import mobile.labs.acw.Puzzle_Class.Puzzle;
 import mobile.labs.acw.R;

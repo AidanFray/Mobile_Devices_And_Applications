@@ -16,7 +16,7 @@ import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-import mobile.labs.acw.Logging;
+import mobile.labs.acw.ExceptionHandling.Logging;
 
 
 //TODO: Puzzles are suspected to be non square in some cases

@@ -7,7 +7,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.net.URLConnection;
 
-import mobile.labs.acw.Logging;
+import mobile.labs.acw.ExceptionHandling.Logging;
 
 public class Image {
 

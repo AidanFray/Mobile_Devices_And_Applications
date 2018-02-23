@@ -1,8 +1,9 @@
-package mobile.labs.acw;
+package mobile.labs.acw.ExceptionHandling;
 import android.util.Log;
 
 public class Logging<T> {
 
+    private static final String LOG_ID = "ACW_APPLICATION";
 
     /**
      * This method deals with general exception handling
@@ -10,7 +11,7 @@ public class Logging<T> {
      */
     public static void Exception(Exception e) {
         String callingMethod = getCallingMethod();
-        Log.i("ACW_Application", "Error [" + callingMethod + "]: " + e.getMessage());
+        Log.i(LOG_ID, "Error [" + callingMethod + "]: " + e.getMessage());
     }
 
     /**
@@ -20,7 +21,7 @@ public class Logging<T> {
      */
     public void Exception(T e, String msg) {
         String callingMethod = getCallingMethod();
-        Log.i("ACW_Application", "Error [" + callingMethod + "]: " + e.toString() + ":" + msg);
+        Log.i(LOG_ID, "Error [" + callingMethod + "]: " + e.toString() + ":" + msg);
     }
 
     /**

@@ -10,7 +10,7 @@ import java.io.InputStreamReader;
 import java.net.URL;
 import java.net.URLConnection;
 
-import mobile.labs.acw.Logging;
+import mobile.labs.acw.ExceptionHandling.Logging;
 
 public class JSON {
 

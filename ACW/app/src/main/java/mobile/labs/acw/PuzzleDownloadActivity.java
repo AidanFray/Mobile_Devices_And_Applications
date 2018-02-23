@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import mobile.labs.acw.CustomViews.PuzzleDownloadView;
+import mobile.labs.acw.ExceptionHandling.Logging;
 import mobile.labs.acw.JSON.JSON;
 import mobile.labs.acw.Puzzle_Class.Puzzle;
 
@@ -47,7 +48,7 @@ public class PuzzleDownloadActivity extends AppCompatActivity {
     }
 
     /**
-     * TODO:
+     * Loads the JSON index file from the phones internal storage
      */
     private void loadIndexFile() {
         String indexDir = getDir(this.getString(R.string.puzzleIndexDir), MODE_PRIVATE).getAbsolutePath();
@@ -56,10 +57,10 @@ public class PuzzleDownloadActivity extends AppCompatActivity {
     }
 
     /**
-     * TODO:
-     * @return
+     * Gets the file object for the index file
+     * @return - File object pointing at the JSON index
      */
-    private File getFileIndexFile() {
+    private File getIndexFileObject() {
         File indexDir = getDir(getString(R.string.puzzleIndexDir), Context.MODE_PRIVATE);
         File file = new File(indexDir.getAbsolutePath() +"/" + getString(R.string.puzzleIndexLocalName));
         return file;
@@ -124,7 +125,7 @@ public class PuzzleDownloadActivity extends AppCompatActivity {
      */
     private Boolean checkIfPuzzleIndexNeedsDownload() {
 
-        File puzzleIndex = getFileIndexFile();
+        File puzzleIndex = getIndexFileObject();
         if (!puzzleIndex.exists()) return true;
 
         //Grabs the last time the file was saved
@@ -161,7 +162,7 @@ public class PuzzleDownloadActivity extends AppCompatActivity {
                 Toast.makeText(PuzzleDownloadActivity.this, "Error: No Connection!", Toast.LENGTH_LONG).show();
 
                 //If the file is cached
-                if (getFileIndexFile().exists()) {
+                if (getIndexFileObject().exists()) {
                     loadIndexFile();
                 }
             }

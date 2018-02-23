@@ -5,7 +5,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-import mobile.labs.acw.Logging;
+import mobile.labs.acw.ExceptionHandling.Logging;
 
 //Class used to hold the information on the puzzle layout
 //It supports string and images

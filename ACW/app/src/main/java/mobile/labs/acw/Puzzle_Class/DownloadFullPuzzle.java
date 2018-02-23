@@ -12,7 +12,7 @@ import java.util.List;
 
 import mobile.labs.acw.Images.Image;
 import mobile.labs.acw.JSON.JSON;
-import mobile.labs.acw.Logging;
+import mobile.labs.acw.ExceptionHandling.Logging;
 
 public class DownloadFullPuzzle extends AsyncTask<String, String, Puzzle> {
 
