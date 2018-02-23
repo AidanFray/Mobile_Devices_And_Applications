@@ -236,9 +236,6 @@ public class PuzzleSolvingActivity extends Activity {
             private final int MOVE_DOWN = 2;
             private final int MOVE_LEFT = 3;
 
-            private Position mCurrentPosition;
-            private Position mDestinationPosition;
-
             /**
              * Class that is used to hold X and Y values for a position. It also contains
              * functionality to move values in a grid direction
@@ -246,58 +243,115 @@ public class PuzzleSolvingActivity extends Activity {
             class Position {
 
                 public Position(int pX, int pY) {
-                    x = pX;
-                    y = pY;
-                }
+                x = pX;
+                y = pY;
+            }
 
                 /**
                  * Returns a Position after applying a move transformation
                  * @param pDirection - The intended transformation
                  * @return - The translated positon
                  */
-                public Position Move(int pDirection) {
+            public Position Move(int pDirection) {
 
-                    Position newPosition = new Position(x, y);
-                    switch (pDirection) {
+                Position newPosition = new Position(x, y);
+                switch (pDirection) {
 
-                        //Clockwise movement from top 0 (Up) -> 3(Left)
-                        case MOVE_UP:
-                            newPosition.y -= 1;
-                            break;
+                    //Clockwise movement from top 0 (Up) -> 3(Left)
+                    case MOVE_UP:
+                        newPosition.y -= 1;
+                        break;
 
-                        case MOVE_RIGHT:
-                            newPosition.x += 1;
-                            break;
+                    case MOVE_RIGHT:
+                        newPosition.x += 1;
+                        break;
 
-                        case MOVE_DOWN:
-                            newPosition.y += 1;
-                            break;
+                    case MOVE_DOWN:
+                        newPosition.y += 1;
+                        break;
 
-                        case MOVE_LEFT:
-                            newPosition.x -= 1;
-                            break;
+                    case MOVE_LEFT:
+                        newPosition.x -= 1;
+                        break;
 
-                    }
-                    return newPosition;
+                }
+                return newPosition;
+            }
+
+
+            int x;
+            int y;
+        }
+
+
+            /**
+             * Method that deals with all types of movement. It either moves a single tile or
+             * if that tile cannot be moved straight away recursively checks the whole row to see
+             * If that row can be moved
+             * @param pDirectionID  - Direction of movement
+             * @param pTile         - The tile to be moved
+             * @return              - Returns a bool up the recursive stack to tell other instances
+             *                        to move tiles
+             */
+            private boolean Movement(int pDirectionID, View pTile) {
+
+                //Grabs the current and intended positions
+                Position currentPosition = getPosition(pTile);
+                Position destinationPosition = currentPosition.Move(pDirectionID);
+
+                //If the tile is next to a blank spot
+                if (checkIfValidMove(destinationPosition)) {
+                    MoveTile(pDirectionID, pTile);
+                    return true;
                 }
 
+                //If it's next to another tile it moves to that tile to check if that tile
+                //is next to a blank spot until it reaches the end of the row
+                else {
+                    int sizeY = mGridElements.length;
+                    int sizeX = mGridElements[0].length;
 
-                int x;
-                int y;
+                    //Find the direction of movement
+                    int deltaX = destinationPosition.x - currentPosition.x;
+                    int deltaY = destinationPosition.y - currentPosition.y;
+
+                    //Check to see if the values are at the edge of the board
+                    if((destinationPosition.y + deltaY < 0) || (destinationPosition.y + deltaY > sizeY)){
+                        return false;
+                    }
+                    if((destinationPosition.x + deltaX < 0) || (destinationPosition.x + deltaX > sizeX)) {
+                        return false;
+                    }
+
+                    View nextTile = mGridElements[destinationPosition.y][destinationPosition.x];
+
+                    //Recursively follows the row or column
+                    if (Movement(pDirectionID, nextTile)) {
+                        MoveTile(pDirectionID, pTile);
+                    }
+                }
+                return true;
             }
 
             /**
              * This method modes the tile in the specified direction.
              * @param pDirectionID - Specifies the direction by using of the defined variables at
              *                     the top
+             * @param pTile         - The tile to be moved
              */
-            private void MoveTile(int pDirectionID) {
-                setCurrentAndDestinationPositions(pDirectionID);
+            private void MoveTile(int pDirectionID, View pTile) {
+
+                //Saves the view in this instance of this method for the
+                // OnAnimationEnd to reference
+                final View tile = pTile;
+
+                Position currentPosition = getPosition(pTile);
+                Position destinationPosition = currentPosition.Move(pDirectionID);
 
                 //If the blank spot is to the left of the current position
-                if (checkIfValidMove(mDestinationPosition)) {
-                    mDeltaX = (mDestinationPosition.x - mCurrentPosition.x) * mTileSize;
-                    mDeltaY = (mDestinationPosition.y - mCurrentPosition.y) * mTileSize;
+                if (checkIfValidMove(destinationPosition)) {
+                    mDeltaX = (destinationPosition.x - currentPosition.x) * mTileSize;
+                    mDeltaY = (destinationPosition.y - currentPosition.y) * mTileSize;
 
                     TranslateAnimation animation =
                             new TranslateAnimation(0, mDeltaX, 0, mDeltaY);
@@ -308,6 +362,7 @@ public class PuzzleSolvingActivity extends Activity {
 
                     //Sets what happens when the animation ends
                     animation.setAnimationListener(new Animation.AnimationListener() {
+
                         @Override
                         public void onAnimationStart(Animation animation) {
 
@@ -317,11 +372,11 @@ public class PuzzleSolvingActivity extends Activity {
                         public void onAnimationEnd(Animation animation) {
 
                             //Updates the position of the grid
-                            mCurrentTile.setX(mCurrentTile.getX() + mDeltaX);
-                            mCurrentTile.setY(mCurrentTile.getY() + mDeltaY);
+                            tile.setX(tile.getX() + mDeltaX);
+                            tile.setY(tile.getY() + mDeltaY);
 
                             //Clears the animation
-                            mCurrentTile.startAnimation(new TranslateAnimation(0f, 0f, 0f, 0f));
+                            tile.startAnimation(new TranslateAnimation(0f, 0f, 0f, 0f));
                         }
 
                         @Override
@@ -330,18 +385,9 @@ public class PuzzleSolvingActivity extends Activity {
                         }
                     });
 
-                    mCurrentTile.startAnimation(animation);
-                    moveOperation(mCurrentPosition, mDestinationPosition);
+                    pTile.startAnimation(animation);
+                    moveOperation(currentPosition, destinationPosition);
                 }
-            }
-
-            /**
-             * Moves the positions a set direction
-             * @param moveID - The move ID that are defined by the variables above
-             */
-            private void setCurrentAndDestinationPositions(int moveID) {
-                mCurrentPosition = getPosition(mCurrentTile);
-                mDestinationPosition = mCurrentPosition.Move(moveID);
             }
 
             /**
@@ -406,22 +452,22 @@ public class PuzzleSolvingActivity extends Activity {
 
             @Override
             public void OnSwipeLeft() {
-                MoveTile(MOVE_LEFT);
+                Movement(MOVE_LEFT, mCurrentTile);
             }
 
             @Override
             public void OnSwipeRight() {
-                MoveTile(MOVE_RIGHT);
+                Movement(MOVE_RIGHT, mCurrentTile);
             }
 
             @Override
             public void OnSwipeUp() {
-                MoveTile(MOVE_UP);
+                Movement(MOVE_UP, mCurrentTile);
             }
 
             @Override
             public void OnSwipeDown() {
-                MoveTile(MOVE_DOWN);
+                Movement(MOVE_DOWN, mCurrentTile);
             }
         };
     }
