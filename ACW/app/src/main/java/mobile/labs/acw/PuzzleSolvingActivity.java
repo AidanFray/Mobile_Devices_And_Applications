@@ -8,6 +8,8 @@ import android.os.Bundle;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.TranslateAnimation;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
@@ -35,11 +37,10 @@ public class PuzzleSolvingActivity extends Activity {
     private LinearLayout mMainLayout;
     private Spinner mPuzzleSpinner;
 
+    //2D mapping the positions of the tiles
     ImageView[][] mGridElements;
 
-    //Both sides of the layout are exactly the same
-    private float layoutSideWidth = 0;
-    private float layoutSideHeight = 0;
+    private float tileWidth = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,11 +68,40 @@ public class PuzzleSolvingActivity extends Activity {
                 mGridLayout.getLayoutParams().height = mGridLayout.getWidth();
 
                 float padding = (getResources().getDimension(R.dimen.gridCustomBorder) * 2);
-                layoutSideWidth = mGridLayout.getWidth() - padding;
+                tileWidth = mGridLayout.getWidth() - padding;
 
                 loadDownloadedPuzzles();
             }
         });
+    }
+
+    /**
+     * Run when the selected index on the puzzle spinner is changed
+     *
+     * @param adapterView
+     * @param view
+     * @param i
+     * @param l
+     */
+    private void onPuzzleSelection(AdapterView<?> adapterView, View view, int i, long l) {
+        TextView textView = (TextView) view;
+        String puzzleName = textView.getText().toString();
+
+        //Loads the puzzle
+        Puzzle puzzle = new Puzzle(this, puzzleName);
+
+        //Puts the image into a linear list
+        List<Bitmap> imageList = new ArrayList<>();
+        for (Row row : puzzle.getPuzzlesImages()) {
+            //Gets a list of the images
+            List<Bitmap> images = row.getElements();
+
+            for (Bitmap image : images) {
+                imageList.add(image);
+            }
+        }
+
+        generateGrid(puzzle.getPuzzleSizeX(), puzzle.getmPuzzleSizeY(), imageList);
     }
 
     /**
@@ -127,35 +157,6 @@ public class PuzzleSolvingActivity extends Activity {
     }
 
     /**
-     * Run when the selected index on the puzzle spinner is changed
-     *
-     * @param adapterView
-     * @param view
-     * @param i
-     * @param l
-     */
-    private void onPuzzleSelection(AdapterView<?> adapterView, View view, int i, long l) {
-        TextView textView = (TextView) view;
-        String puzzleName = textView.getText().toString();
-
-        //Loads the puzzle
-        Puzzle puzzle = new Puzzle(this, puzzleName);
-
-        //Puts the image into a linear list
-        List<Bitmap> imageList = new ArrayList<>();
-        for (Row row : puzzle.getPuzzlesImages()) {
-            //Gets a list of the images
-            List<Bitmap> images = row.getElements();
-
-            for (Bitmap image : images) {
-                imageList.add(image);
-            }
-        }
-
-        generateGrid(puzzle.getPuzzleSizeX(), puzzle.getmPuzzleSizeY(), imageList);
-    }
-
-    /**
      * Toast used to inform the user that they need to download a puzzle
      */
     private void showNeedToDownloadPuzzleToast() {
@@ -179,7 +180,7 @@ public class PuzzleSolvingActivity extends Activity {
         mGridLayout.removeAllViews();
 
         //Grabs the dimensions of each grid
-        int stepSize = (int) (layoutSideWidth / sizeX);
+        int stepSize = (int) (tileWidth / sizeX);
 
         int imageIndex = 0;
         for (int y = 0; y < sizeY; y++) {
@@ -221,6 +222,8 @@ public class PuzzleSolvingActivity extends Activity {
     }
 
 
+    //------------------- Tile Movement Code -------------------------- //
+
     /**
      * Method that codes the listener
      */
@@ -247,6 +250,11 @@ public class PuzzleSolvingActivity extends Activity {
                     y = pY;
                 }
 
+                /**
+                 * Returns a Position after applying a move transformation
+                 * @param pDirection - The intended transformation
+                 * @return - The translated positon
+                 */
                 public Position Move(int pDirection) {
 
                     Position newPosition = new Position(x, y);
@@ -276,6 +284,55 @@ public class PuzzleSolvingActivity extends Activity {
 
                 int x;
                 int y;
+            }
+
+            /**
+             * This method modes the tile in the specified direction.
+             * @param pDirectionID - Specifies the direction by using of the defined variables at
+             *                     the top
+             */
+            private void MoveTile(int pDirectionID) {
+                setCurrentAndDestinationPositions(pDirectionID);
+
+                //If the blank spot is to the left of the current position
+                if (checkIfValidMove(mDestinationPosition)) {
+                    mDeltaX = (mDestinationPosition.x - mCurrentPosition.x) * mTileSize;
+                    mDeltaY = (mDestinationPosition.y - mCurrentPosition.y) * mTileSize;
+
+                    TranslateAnimation animation =
+                            new TranslateAnimation(0, mDeltaX, 0, mDeltaY);
+
+                    animation.setDuration(100);
+                    animation.setRepeatCount(0);
+                    animation.setFillAfter(true);
+
+                    //Sets what happens when the animation ends
+                    animation.setAnimationListener(new Animation.AnimationListener() {
+                        @Override
+                        public void onAnimationStart(Animation animation) {
+
+                        }
+
+                        @Override
+                        public void onAnimationEnd(Animation animation) {
+
+                            //Updates the position of the grid
+                            mCurrentTile.setX(mCurrentTile.getX() + mDeltaX);
+                            mCurrentTile.setY(mCurrentTile.getY() + mDeltaY);
+
+                            //Clears the animation
+                            mCurrentTile.startAnimation(new TranslateAnimation(0f, 0f, 0f, 0f));
+                        }
+
+                        @Override
+                        public void onAnimationRepeat(Animation animation) {
+
+                        }
+                    });
+
+                    mCurrentTile.startAnimation(animation);
+                    moveOperation(mCurrentPosition, mDestinationPosition);
+                }
             }
 
             /**
@@ -349,47 +406,22 @@ public class PuzzleSolvingActivity extends Activity {
 
             @Override
             public void OnSwipeLeft() {
-                setCurrentAndDestinationPositions(MOVE_LEFT);
-
-                //If the blank spot is to the left of the current position
-                if (checkIfValidMove(mDestinationPosition)) {
-                    mCurrentTile.setX(mCurrentTile.getX() - (mTileSize));
-                    moveOperation(mCurrentPosition, mDestinationPosition);
-                }
+                MoveTile(MOVE_LEFT);
             }
 
             @Override
             public void OnSwipeRight() {
-                setCurrentAndDestinationPositions(MOVE_RIGHT);
-
-                //If the blank spot is to the left of the current position
-                if (checkIfValidMove(mDestinationPosition)) {
-                    mCurrentTile.setX(mCurrentTile.getX() + (mTileSize));
-                    moveOperation(mCurrentPosition, mDestinationPosition);
-                }
+                MoveTile(MOVE_RIGHT);
             }
 
             @Override
             public void OnSwipeUp() {
-                setCurrentAndDestinationPositions(MOVE_UP);
-
-                //If the blank spot is to the left of the current position
-                if (checkIfValidMove(mDestinationPosition)) {
-                    mCurrentTile.setY(mCurrentTile.getY() - (mTileSize));
-                    moveOperation(mCurrentPosition, mDestinationPosition);
-                }
+                MoveTile(MOVE_UP);
             }
 
             @Override
             public void OnSwipeDown() {
-                setCurrentAndDestinationPositions(MOVE_DOWN);
-
-                //If the blank spot is to the left of the current position
-                if (checkIfValidMove(mDestinationPosition)) {
-                    mCurrentTile.setY(mCurrentTile.getY() + (mTileSize));
-                    moveOperation(mCurrentPosition, mDestinationPosition);
-                }
-
+                MoveTile(MOVE_DOWN);
             }
         };
     }
@@ -404,6 +436,9 @@ public class PuzzleSolvingActivity extends Activity {
         private final GestureDetector mGestureDetector;
         public View mCurrentTile;
         public int mTileSize;
+
+        public float mDeltaX;
+        public float mDeltaY;
 
         public OnSwipeListener(Context context) {
             mContext = context;
