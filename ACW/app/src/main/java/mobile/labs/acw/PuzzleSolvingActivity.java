@@ -181,9 +181,9 @@ public class PuzzleSolvingActivity extends Activity {
     private void loadDownloadedPuzzles() {
 
         String puzzleIndexDir
-                = getDir(PuzzleDownloadActivity.mPuzzleIndexDir, MODE_PRIVATE).getAbsolutePath();
+                = getDir(getString(R.string.puzzleIndexDir), MODE_PRIVATE).getAbsolutePath();
         File indexFile
-                = new File(puzzleIndexDir + "/" + PuzzleDownloadActivity.mPuzzleIndexLocalName);
+                = new File(puzzleIndexDir + "/" + getString(R.string.puzzleIndexLocalName));
 
         if (!indexFile.exists()) {
             showNeedToDownloadPuzzleToast();
@@ -192,11 +192,11 @@ public class PuzzleSolvingActivity extends Activity {
 
         //Grabs the values from the json
         JSONObject index = JSON.ReadFromFile(indexFile.getAbsolutePath());
-        JSONArray indexValues = JSON.GetJSONArray(index, PuzzleDownloadActivity.mJSONArrayIndexID);
+        JSONArray indexValues = JSON.GetJSONArray(index, getString(R.string.jsonArrayIndexName));
 
         //Checks if puzzles are downloaded
         SharedPreferences sharedPreferences
-                = getSharedPreferences(PuzzleDownloadActivity.mPuzzleSharedPreferences, MODE_PRIVATE);
+                = getSharedPreferences(getString(R.string.puzzleSharedPreferencesID), MODE_PRIVATE);
 
         List<String> downloadedPuzzles = new ArrayList<>();
         for (int i = 0; i < indexValues.length(); i++) {

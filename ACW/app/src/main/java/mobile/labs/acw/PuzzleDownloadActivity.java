@@ -27,14 +27,6 @@ public class PuzzleDownloadActivity extends AppCompatActivity {
 
     private LinearLayout mDownloadLayout;
 
-    //TODO: Move to a literal string class?? or put in strings.xml
-    public static final String mBaseUrl = "http://www.simongrey.net/08027/slidingPuzzleAcw/";
-    public static final String mPuzzleIndexUrl = "index.json";
-    public static final String mPuzzleIndexLocalName = "index.dat";
-    public static final String mPuzzleIndexDir = "Index";
-    public static final String mPuzzleSharedPreferences = "Puzzles";
-    public static final String mJSONArrayIndexID = "PuzzleIndex";
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -45,7 +37,9 @@ public class PuzzleDownloadActivity extends AppCompatActivity {
 
         if (checkIfPuzzleIndexNeedsDownload()) {
             //Downloads the JSON index for all the puzzles
-            new PuzzlePreviewDownload().execute(mBaseUrl + mPuzzleIndexUrl);
+            new PuzzlePreviewDownload().execute(
+                            getString(R.string.baseURL) +
+                            getString(R.string.puzzleIndexFileName));
         }
         else {
             loadIndexFile();
@@ -56,9 +50,9 @@ public class PuzzleDownloadActivity extends AppCompatActivity {
      * TODO:
      */
     private void loadIndexFile() {
-        String indexDir = getDir(mPuzzleIndexDir, MODE_PRIVATE).getAbsolutePath();
+        String indexDir = getDir(this.getString(R.string.puzzleIndexDir), MODE_PRIVATE).getAbsolutePath();
         new CreateCustomDownloadViews().execute(
-                JSON.ReadFromFile(indexDir + "/" + mPuzzleIndexLocalName));
+                JSON.ReadFromFile(indexDir + "/" + getString(R.string.puzzleIndexLocalName)));
     }
 
     /**
@@ -66,8 +60,8 @@ public class PuzzleDownloadActivity extends AppCompatActivity {
      * @return
      */
     private File getFileIndexFile() {
-        File indexDir = getDir(mPuzzleIndexDir, Context.MODE_PRIVATE);
-        File file = new File(indexDir.getAbsolutePath() +"/" + mPuzzleIndexLocalName);
+        File indexDir = getDir(getString(R.string.puzzleIndexDir), Context.MODE_PRIVATE);
+        File file = new File(indexDir.getAbsolutePath() +"/" + getString(R.string.puzzleIndexLocalName));
         return file;
     }
 
@@ -80,11 +74,11 @@ public class PuzzleDownloadActivity extends AppCompatActivity {
 
         try {
             //Writes the index to a file
-            File indexDir = this.getDir(mPuzzleIndexDir, Context.MODE_PRIVATE);
+            File indexDir = this.getDir(getString(R.string.puzzleIndexDir), Context.MODE_PRIVATE);
             indexDir.mkdir();
 
             Writer stream =
-                    new FileWriter(indexDir.getAbsolutePath() + "/" + mPuzzleIndexLocalName);
+                    new FileWriter(indexDir.getAbsolutePath() + "/" + getString(R.string.puzzleIndexLocalName));
 
             stream.write(jsonObject.toString());
             stream.close();
@@ -117,7 +111,7 @@ public class PuzzleDownloadActivity extends AppCompatActivity {
      */
     private Boolean checkForDownloadedPuzzle(String pPuzzleName) {
 
-        SharedPreferences preferences = getSharedPreferences(mPuzzleSharedPreferences, MODE_PRIVATE);
+        SharedPreferences preferences = getSharedPreferences(getString(R.string.puzzleSharedPreferencesID), MODE_PRIVATE);
         return preferences.getBoolean(pPuzzleName, false);
     }
 
@@ -208,7 +202,7 @@ public class PuzzleDownloadActivity extends AppCompatActivity {
         private void createCustomViews(JSONObject jsonObject) {
 
             try {
-                JSONArray jsonArray = jsonObject.getJSONArray(mJSONArrayIndexID);
+                JSONArray jsonArray = jsonObject.getJSONArray(getString(R.string.jsonArrayIndexName));
 
                 //Loops through each value and add to to the array
                 for (int i =0; i < jsonArray.length(); i++) {

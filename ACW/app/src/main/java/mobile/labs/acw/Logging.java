@@ -29,8 +29,6 @@ public class Logging<T> {
      */
     private static String getCallingMethod() {
         StackTraceElement[] stackTraceElements = Thread.currentThread().getStackTrace();
-
-        //TODO: test that the 5th element is always the calling method
         return stackTraceElements[4].getClassName() + "." + stackTraceElements[4].getMethodName();
 
     }

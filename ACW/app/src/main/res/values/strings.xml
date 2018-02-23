@@ -1,13 +1,21 @@
 <resources>
     <string name="app_name">ACW</string>
-
     <string name="blank_TextView">Blank TextView String</string>
 
+    <!-- MainActivity Button texts -->
     <string name="puzzle_solving_button_text">Solve Puzzle</string>
     <string name="puzzle_download_menu_text">Puzzle Download</string>
     <string name="highscore_menu_text">Highscores</string>
 
-
+    <!-- Image view descriptions for the custom download view-->
     <string name="puzzleThumbnail_Description">ImageView that contains the preview of the puzzle to download</string>
     <string name="puzzleDownloadState_Description">ImageView that shows if the puzzle has been downloaded</string>
+
+    <!-- Literal string for addresses and file paths  -->
+    <string name="baseURL">http://www.simongrey.net/08027/slidingPuzzleAcw/</string>
+    <string name="puzzleIndexFileName">index.json</string>
+    <string name="puzzleIndexDir">Index</string>
+    <string name="puzzleIndexLocalName">index.dat</string>
+    <string name="puzzleSharedPreferencesID">Puzzles</string>
+    <string name="jsonArrayIndexName">PuzzleIndex</string>
 </resources>
