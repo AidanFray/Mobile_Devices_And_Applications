@@ -30,6 +30,11 @@ import mobile.labs.acw.JSON.JSON;
 import mobile.labs.acw.Puzzle_Class.Puzzle;
 import mobile.labs.acw.Puzzle_Class.Row;
 
+/**
+ * Activity that contains the grid of images and where the game will actually be played.
+ * It will handle loading images into the grid, score calculation and the code required to play
+ * the game
+ */
 public class PuzzleSolvingActivity extends Activity {
 
     //Layout's views
@@ -101,7 +106,7 @@ public class PuzzleSolvingActivity extends Activity {
             }
         }
 
-        generateGrid(puzzle.getPuzzleSizeX(), puzzle.getmPuzzleSizeY(), imageList);
+        generateGrid(puzzle.getPuzzleSizeX(), puzzle.getPuzzleSizeY(), imageList);
     }
 
     /**
@@ -216,7 +221,7 @@ public class PuzzleSolvingActivity extends Activity {
             }
         }
 
-        //TODO: Why in the hell does this work??
+        //Puts the height into a sort of dynamic wrap content mode
         mGridLayout.getLayoutParams().height = -5;
         mGridLayout.invalidate();
     }
@@ -235,6 +240,8 @@ public class PuzzleSolvingActivity extends Activity {
             private final int MOVE_RIGHT = 1;
             private final int MOVE_DOWN = 2;
             private final int MOVE_LEFT = 3;
+
+            private final int SLIDE_SPEED = 50;
 
             /**
              * Class that is used to hold X and Y values for a position. It also contains
@@ -282,7 +289,6 @@ public class PuzzleSolvingActivity extends Activity {
             int x;
             int y;
         }
-
 
             /**
              * Method that deals with all types of movement. It either moves a single tile or
@@ -356,7 +362,7 @@ public class PuzzleSolvingActivity extends Activity {
                     TranslateAnimation animation =
                             new TranslateAnimation(0, mDeltaX, 0, mDeltaY);
 
-                    animation.setDuration(100);
+                    animation.setDuration(SLIDE_SPEED);
                     animation.setRepeatCount(0);
                     animation.setFillAfter(true);
 
@@ -485,6 +491,7 @@ public class PuzzleSolvingActivity extends Activity {
 
         public float mDeltaX;
         public float mDeltaY;
+
 
         public OnSwipeListener(Context context) {
             mContext = context;

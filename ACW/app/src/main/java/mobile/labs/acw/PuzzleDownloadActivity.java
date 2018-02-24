@@ -23,7 +23,10 @@ import mobile.labs.acw.ExceptionHandling.Logging;
 import mobile.labs.acw.JSON.JSON;
 import mobile.labs.acw.Puzzle_Class.Puzzle;
 
-
+/**
+ * Activity that handles the process of downloading new puzzles. It has the responsibilities of
+ * checking for new puzzles and downloading and formatting new puzzles.
+ */
 public class PuzzleDownloadActivity extends AppCompatActivity {
 
     private LinearLayout mDownloadLayout;

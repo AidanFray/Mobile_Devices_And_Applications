@@ -17,15 +17,18 @@ import java.util.ArrayList;
 import java.util.List;
 
 import mobile.labs.acw.ExceptionHandling.Logging;
+import mobile.labs.acw.R;
 
-
-//TODO: Puzzles are suspected to be non square in some cases
 //TODO: MetaData needs to be saved as well so puzzles can be sorted and filtered
 // This can be done with a database and it will be easy to store and retrieve data
 
+/**
+ * Class that represents a downloaded puzzle. It contains all the information required to
+ * use and manipulate the puzzles data
+ */
 public class Puzzle {
 
-    private final int compression_percentage = 100;
+    private final int IMAGE_COMPRESSION_PERCENTAGE = 100;
 
     //Member variables
     private String mName;
@@ -39,26 +42,19 @@ public class Puzzle {
     public String getName() {
         return mName;
     }
-
     public List<Row> getInitialPositions() {
         return mInitialPositions;
     }
-
     public List<Row> getPuzzlesImages() {
         return mPuzzlesImages;
     }
-
     public Bitmap getPuzzleThumbnail() {
         return mPuzzleThumbnail;
     }
-
     public int getPuzzleSizeX() {
         return mPuzzleSizeX;
     }
-    public int getmPuzzleSizeY() { return mPuzzleSizeY; }
-
-    //Literals
-    private final String mInitialPosFileName = "initial_positions.dat";
+    public int getPuzzleSizeY() { return mPuzzleSizeY; }
 
     //Custom constructor
     public Puzzle(String pName,
@@ -73,13 +69,17 @@ public class Puzzle {
         mPuzzleSizeY = pPuzzleSizeY;
     }
 
-    //Load constructor
-    public Puzzle(Context context, String pName) {
-        Load(context, pName);
+    public Puzzle(Context pContext, String pName) {
+        Load(pContext, pName);
     }
 
-    //Used to patch together all images into a thumbnail
-    private Bitmap createThumbnail(Context context) {
+    /**
+     * Method that patches all the tile photos together to form a thumbnail image. It uses a canvas
+     * object a draws to that canvas object before saving it to a file
+     * @param pContext - The calling context
+     * @return - The resulting bitmap image
+     */
+    private Bitmap createThumbnail(Context pContext) {
         try {
             int noOfTiles = mPuzzlesImages.get(0).getElements().size();
 
@@ -147,18 +147,23 @@ public class Puzzle {
         return null;
     }
 
-    public void Save(Context context) {
+    /**
+     * Used to save the Puzzle to file. It saves the positions in a .dat file using the
+     * ObjectOutputStream to serialize the data.
+     * @param pContext - The entered context
+     */
+    public void Save(Context pContext) {
 
         try {
             //Creates a directory with the puzzles name
-            File puzzleDir = context.getDir(mName, Context.MODE_PRIVATE);
+            File puzzleDir = pContext.getDir(mName, Context.MODE_PRIVATE);
             File layoutDir = new File(puzzleDir, "Layout");
             layoutDir.mkdir();
             File imageDir = new File(puzzleDir, "Images");
             imageDir.mkdir();
 
             //Saves the initial positions
-            SaveObject(layoutDir.getAbsolutePath() + "/" + mInitialPosFileName, mInitialPositions);
+            SaveObject(layoutDir.getAbsolutePath() + "/" + pContext.getString(R.string.initialPositionsFileName), mInitialPositions);
 
             //Saves all the images
             for (int i = 0; i < mPuzzlesImages.size(); i++) {
@@ -178,7 +183,7 @@ public class Puzzle {
             }
 
             //Saves the thumbnail
-            Bitmap bmp = createThumbnail(context);
+            Bitmap bmp = createThumbnail(pContext);
             SaveImage(imageDir.getAbsolutePath() + "/" + "Thumbnail.png", bmp);
             mPuzzleThumbnail = bmp;
 
@@ -187,12 +192,17 @@ public class Puzzle {
         }
     }
 
-    private void SaveImage(String filePath, Bitmap image) {
+    /**
+     * Internal method that is used to save an individual image
+     * @param pFilePath - Destination filepath
+     * @param pImage - The bitmap object to be saved
+     */
+    private void SaveImage(String pFilePath, Bitmap pImage) {
 
         FileOutputStream stream = null;
         try {
-            stream = new FileOutputStream(filePath);
-            image.compress(Bitmap.CompressFormat.PNG, compression_percentage, stream);
+            stream = new FileOutputStream(pFilePath);
+            pImage.compress(Bitmap.CompressFormat.PNG, IMAGE_COMPRESSION_PERCENTAGE, stream);
             stream.close();
 
         } catch (IOException e) {
@@ -200,13 +210,18 @@ public class Puzzle {
         }
     }
 
-    private void SaveObject(String filePath, Object object) {
+    /**
+     * Internal method that is used to save objects using the ObjectOutputStream
+     * @param pFilePath - Destination file path
+     * @param pObject  - The object to be serialized and saved to file
+     */
+    private void SaveObject(String pFilePath, Object pObject) {
 
         try {
-            File file = new File(filePath);
+            File file = new File(pFilePath);
             ObjectOutputStream objStream =
                     new ObjectOutputStream(new FileOutputStream(file.getAbsolutePath()));
-            objStream.writeObject(object);
+            objStream.writeObject(pObject);
             objStream.close();
         } catch (IOException e) {
             Logging.Exception(e);
@@ -214,16 +229,23 @@ public class Puzzle {
 
     }
 
-    private void Load(Context context, String pPuzzleName) {
+    /**
+     * Method used to load a puzzle from file. It's an internal method that is called from a
+     * special constructor
+     * @param pContext - The calling context
+     * @param pPuzzleName - The name of the puzzle to load
+     */
+    private void Load(Context pContext, String pPuzzleName) {
 
         mName = pPuzzleName;
-        File puzzleDir = context.getDir(mName, Context.MODE_PRIVATE);
+        File puzzleDir = pContext.getDir(mName, Context.MODE_PRIVATE);
         File layoutDir = new File(puzzleDir, "Layout");
         File imageDir = new File(puzzleDir, "Images");
 
         try {
             //Grabs the initial positions as an object
-            mInitialPositions = (List<Row>) LoadObject(layoutDir.getAbsolutePath() + "/" + mInitialPosFileName);
+            mInitialPositions = (List<Row>) LoadObject(
+                    String.format("%s/%s", layoutDir.getAbsolutePath(), pContext.getString(R.string.initialPositionsFileName)));
 
             mPuzzleSizeY = mInitialPositions.size();
             mPuzzleSizeX = mInitialPositions.get(0).getElements().size();
@@ -258,10 +280,15 @@ public class Puzzle {
         }
     }
 
-    private Bitmap LoadImage(String filePath) {
+    /**
+     * An internal method that is used to load an image from an entered filepath
+     * @param pFilePath - Destination file path
+     * @return - The retried bitmap object. Note: 'null' is returned if there is an issue
+     */
+    private Bitmap LoadImage(String pFilePath) {
 
         try {
-            FileInputStream fileStream = new FileInputStream(filePath);
+            FileInputStream fileStream = new FileInputStream(pFilePath);
             return BitmapFactory.decodeStream(fileStream);
         } catch (Exception e) {
             Logging.Exception(e);
@@ -269,11 +296,16 @@ public class Puzzle {
         return null;
     }
 
-    private Object LoadObject(String filePath) {
+    /**
+     * Method used to load in an object using the ObjectInputStream.
+     * @param pFilePath - The target file path
+     * @return - The object that is retrieved. Null is return if there is an error
+     */
+    private Object LoadObject(String pFilePath) {
         try {
             ObjectInputStream objectInputStream = null;
             try {
-                objectInputStream = new ObjectInputStream(new FileInputStream(filePath));
+                objectInputStream = new ObjectInputStream(new FileInputStream(pFilePath));
                 Object obj = objectInputStream.readObject();
                 objectInputStream.close();
                 return obj;

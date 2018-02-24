@@ -13,9 +13,13 @@
 
     <!-- Literal string for addresses and file paths  -->
     <string name="baseURL">http://www.simongrey.net/08027/slidingPuzzleAcw/</string>
+    <string name="puzzleInfoUrl">puzzles/</string>
+    <string name="puzzleLayoutUrl">layouts/</string>
+    <string name="puzzleImageUrl">images/</string>
     <string name="puzzleIndexFileName">index.json</string>
     <string name="puzzleIndexDir">Index</string>
     <string name="puzzleIndexLocalName">index.dat</string>
     <string name="puzzleSharedPreferencesID">Puzzles</string>
     <string name="jsonArrayIndexName">PuzzleIndex</string>
+    <string name="initialPositionsFileName">initial_positions.dat</string>
 </resources>

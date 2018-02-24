@@ -1,5 +1,6 @@
 package mobile.labs.acw.Puzzle_Class;
 
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.os.AsyncTask;
 
@@ -10,22 +11,23 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
+import mobile.labs.acw.ExceptionHandling.Logging;
 import mobile.labs.acw.Images.Image;
 import mobile.labs.acw.JSON.JSON;
-import mobile.labs.acw.ExceptionHandling.Logging;
+import mobile.labs.acw.R;
 
+/**
+ * Async task that is responsible for the downloading of a puzzle from a URL
+ */
 public class DownloadFullPuzzle extends AsyncTask<String, String, Puzzle> {
 
-    private OnResultRecieved mListener;
-
-    public DownloadFullPuzzle(OnResultRecieved pListener) {
+    public DownloadFullPuzzle(OnResultRecieved pListener, Context pContext) {
         mListener = pListener;
+        mContext = pContext;
     }
 
-    private final String mBaseUrl = "http://www.simongrey.net/08027/slidingPuzzleAcw/";
-    private final String mPuzzleInfoUrl = "puzzles/";
-    private final String mPuzzleLayoutUrl = "layouts/";
-    private final String mPuzzleImageUrl = "images/";
+    private Context mContext;
+    private OnResultRecieved mListener;
 
     // Puzzle Information
     private String mPuzzleName;
@@ -61,7 +63,10 @@ public class DownloadFullPuzzle extends AsyncTask<String, String, Puzzle> {
     }
 
     private void getPuzzleInfo(String puzzleName) {
-        JSONObject puzzle_info = JSON.ReadFromURL(mBaseUrl + mPuzzleInfoUrl + puzzleName);
+        JSONObject puzzle_info = JSON.ReadFromURL(
+                        mContext.getString(R.string.baseURL) +
+                        mContext.getString(R.string.puzzleInfoUrl) +
+                        puzzleName);
 
         try {
             mLayoutName = (String)puzzle_info.get("layout");
@@ -71,7 +76,9 @@ public class DownloadFullPuzzle extends AsyncTask<String, String, Puzzle> {
         }
     }
     private void getPuzzleLayout() {
-        JSONObject puzzle_layout = JSON.ReadFromURL(mBaseUrl + mPuzzleLayoutUrl + mLayoutName);
+        JSONObject puzzle_layout = JSON.ReadFromURL(
+                                mContext.getString(R.string.baseURL) +
+                                mContext.getString(R.string.puzzleLayoutUrl) + mLayoutName);
 
         JSONArray layout_info = null;
         try {
@@ -111,7 +118,9 @@ public class DownloadFullPuzzle extends AsyncTask<String, String, Puzzle> {
 
                 //Grabs the image from URL
                 if (!fileName.equals("empty")) {
-                    Bitmap image = Image.DownloadFromURL(mBaseUrl + mPuzzleImageUrl + mPictureSetName + "/" + fileName + ".jpg");
+                    Bitmap image = Image.DownloadFromURL(
+                                    mContext.getString(R.string.baseURL) +
+                                    mContext.getString(R.string.puzzleImageUrl) + mPictureSetName + "/" + fileName + ".jpg");
                     imageRow.getElements().add(image);
                 } else{
                     //Adds a blank position

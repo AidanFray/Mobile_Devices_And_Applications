@@ -1,5 +1,11 @@
 package mobile.labs.acw.ExceptionHandling;
+
 import android.util.Log;
+
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.Writer;
 
 public class Logging<T> {
 
@@ -11,7 +17,9 @@ public class Logging<T> {
      */
     public static void Exception(Exception e) {
         String callingMethod = getCallingMethod();
+        e.printStackTrace();
         Log.i(LOG_ID, "Error [" + callingMethod + "]: " + e.getMessage());
+        SaveToLogFile(e.getMessage());
     }
 
     /**
@@ -22,6 +30,7 @@ public class Logging<T> {
     public void Exception(T e, String msg) {
         String callingMethod = getCallingMethod();
         Log.i(LOG_ID, "Error [" + callingMethod + "]: " + e.toString() + ":" + msg);
+        SaveToLogFile(msg);
     }
 
     /**
@@ -31,6 +40,20 @@ public class Logging<T> {
     private static String getCallingMethod() {
         StackTraceElement[] stackTraceElements = Thread.currentThread().getStackTrace();
         return stackTraceElements[4].getClassName() + "." + stackTraceElements[4].getMethodName();
+
+    }
+
+    private static void SaveToLogFile(String pMsg) {
+        File logFile = new File("data/data/ACW_log.txt");
+
+        try {
+            Writer stream = new FileWriter(logFile);
+            stream.write(pMsg);
+            stream.close();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
     }
 }

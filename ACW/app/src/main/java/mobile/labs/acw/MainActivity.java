@@ -25,8 +25,6 @@ public class MainActivity extends AppCompatActivity {
         System.gc();
     }
 
-
-    //Button_OnClick methods
     public void puzzleDownload_Button_OnClick(View pView){
         Intent intent = new Intent(pView.getContext(), PuzzleDownloadActivity.class);
         startActivity(intent);
@@ -35,7 +33,6 @@ public class MainActivity extends AppCompatActivity {
         Intent intent = new Intent(pView.getContext(), PuzzleSolvingActivity.class);
         startActivity(intent);
     }
-
     public void highscore_Button_OnClick(View pView) {
         //TODO: add intent code
     }

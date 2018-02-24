@@ -7,8 +7,22 @@ import java.util.List;
 
 import mobile.labs.acw.ExceptionHandling.Logging;
 
-//Class used to hold the information on the puzzle layout
-//It supports string and images
+/**
+ * An object designed to represent a row of the puzzle. The mElement object will contain all the
+ * values of a row
+ * @param <T> - The type of object the row can hold. This means it can hold index positions,
+ *           and bitmap for the corresponding index.
+ *
+ * Note:
+ *           This class implements the "Serializable" interface to allow it to be written to
+ *           file using ObjectWriter/ObjectReader.
+ *           The class to perform this requires:
+ *
+ *              writeObject(ObjectOutputStream)
+ *              readObject(ObjectInputStream)
+ *              readObjectNoData()
+ *
+ */
 public class Row<T> implements Serializable{
 
     private List<T> mElements = new ArrayList<>();
@@ -16,6 +30,11 @@ public class Row<T> implements Serializable{
         return mElements;
     }
 
+    /**
+     * Dynamic constructor for creating a row in one line. It supports a dynamic amount of
+     * parameters to allow this.
+     * @param args
+     */
     public Row(T... args) {
 
         //Dynamically adds values so the rows can be dynamically sized
@@ -28,7 +47,11 @@ public class Row<T> implements Serializable{
         mElements.add(value);
     }
 
-    //Methods that allow the object to be saved and loaded using Object Reader/Writer
+
+    /**
+     * Used when the Serializable object writes this class to file
+     * @param out - The ObjectOutputStream used to save the class instance
+     */
     private void writeObject(java.io.ObjectOutputStream out) {
         try{
             for (int i = 0; i < mElements.size(); i++) {
@@ -43,6 +66,11 @@ public class Row<T> implements Serializable{
             Logging.Exception(e);
         }
     }
+
+    /**
+     * Used when the Serializable interface reads the class from file
+     * @param in - The ObjectInputStream that is used to read in the class
+     */
     private void readObject(java.io.ObjectInputStream in) {
 
         mElements = new ArrayList<>();
@@ -63,6 +91,10 @@ public class Row<T> implements Serializable{
         }
 
     }
+
+    /**
+     * Requires as part of the Serializable interface. In this class it performs no function
+     */
     private void readObjectNoData() {
 
     }

@@ -18,13 +18,16 @@ import mobile.labs.acw.Puzzle_Class.DownloadFullPuzzle;
 import mobile.labs.acw.Puzzle_Class.Puzzle;
 import mobile.labs.acw.R;
 
-// Custom view that contains the value for the downloadable puzzles
-// It contains a Thumbnail, Description and Tick to show if it has been downloaded or not
+
+/**
+ * Custom view that contains the value for the downloadable puzzles
+ * It contains a Thumbnail, Description and Tick to show if it has been downloaded or not
+ */
 public class PuzzleDownloadView extends LinearLayout implements View.OnClickListener {
 
-    //Shared blank thumbnail. Static so each class doesn't keep a copy
+    //Shared images between all instances;
     private static Bitmap mBlankThumbnail = null;
-    private static Drawable mDownloadStatus_Drawable;
+    private static Drawable mDownloadStatus_Drawable = null;
 
     private View mNormalView;
     private View mDownloadView;
@@ -39,59 +42,15 @@ public class PuzzleDownloadView extends LinearLayout implements View.OnClickList
     public PuzzleDownloadView(Context context) {
         super(context);
         Setup();
-        InflateNormalView(context);
+        InflateNormalView();
         LoadViews();
     }
 
     public PuzzleDownloadView(Context context, AttributeSet attrs) {
         super(context, attrs);
         Setup();
-        InflateNormalView(context);
+        InflateNormalView();
         LoadViews();
-    }
-
-    private void Setup() {
-        LayoutInflater inflater = LayoutInflater.from(getContext());
-
-        //Loads in the thumbnail once
-        if (mBlankThumbnail == null) {
-            mBlankThumbnail = BitmapFactory.decodeResource(getResources(), R.drawable.blank_puzzle);
-        }
-
-        try {
-            mNormalView = inflater.inflate(R.layout.puzzle_download_view, this, false);
-            mDownloadView = inflater.inflate(R.layout.puzzle_download_progress_view, this, false);
-        } catch (Exception e) {
-            Logging.Exception(e);
-        }
-    }
-
-    private void LoadViews() {
-
-        //Grabs all controls
-        mThumbnail = (ImageView) findViewById(R.id.puzzle_thumbnail_ImageView);
-        mThumbnail.setClickable(true);
-        mThumbnail.setOnClickListener(this);
-        mDownloadStatus = (ImageView) findViewById(R.id.puzzle_download_status_ImageView);
-        mDownloadStatus.setImageDrawable(null);
-        mDownloadStatus.setClickable(true);
-        mDownloadStatus.setOnClickListener(this);
-        mDownloadStatus_Drawable = getResources().getDrawable(R.drawable.download_status);
-        mPuzzleDescription = (TextView) findViewById(R.id.puzzle_description_TextView);
-        mPuzzleDescription.setClickable(true);
-        mPuzzleDescription.setOnClickListener(this);
-        mDownloadBool = false;
-
-    }
-
-    private void InflateNormalView(Context context) {
-        this.removeView(mDownloadView);
-        this.addView(mNormalView);
-    }
-
-    private void InflateDownloadView(Context context) {
-        this.removeView(mNormalView);
-        this.addView(mDownloadView);
     }
 
     @Override
@@ -99,7 +58,7 @@ public class PuzzleDownloadView extends LinearLayout implements View.OnClickList
 
         //Only allows download if the puzzle can be downloaded
         if (!mDownloadBool) {
-            InflateDownloadView(getContext());
+            InflateDownloadView();
 
             new DownloadFullPuzzle(new DownloadFullPuzzle.OnResultRecieved() {
                 @Override
@@ -120,18 +79,83 @@ public class PuzzleDownloadView extends LinearLayout implements View.OnClickList
                         mThumbnail.setImageBitmap(result.getPuzzleThumbnail());
 
                         //Sets progress bar to done
-                        InflateNormalView(getContext());
+                        InflateNormalView();
                         setDownloadStatus(true);
                     }
                     else {
-                        InflateNormalView(getContext());
+                        InflateNormalView();
                         Toast.makeText(getContext(), "Error downloading puzzle. No Connection!", Toast.LENGTH_LONG).show();
                     }
                 }
-            }).execute(String.valueOf(mPuzzleDescription.getText()));
+            }, getContext()).execute(String.valueOf(mPuzzleDescription.getText()));
         }
     }
 
+
+    /**
+     * Code that is used to create objects and inflate views
+     */
+    private void Setup() {
+        LayoutInflater inflater = LayoutInflater.from(getContext());
+
+        //Loads in the thumbnail once
+        if (mBlankThumbnail == null) {
+
+            //TODO: Would it be more effcient to create a blank canvas with a border??
+            mBlankThumbnail = BitmapFactory.decodeResource(getResources(), R.drawable.blank_puzzle);
+        }
+
+        try {
+            mNormalView = inflater.inflate(R.layout.puzzle_download_view, this, false);
+            mDownloadView = inflater.inflate(R.layout.puzzle_download_progress_view, this, false);
+        } catch (Exception e) {
+            Logging.Exception(e);
+        }
+    }
+
+    /**
+     * Loads in all the necessary views for the
+     */
+    private void LoadViews() {
+
+        //Grabs all controls
+        mThumbnail = (ImageView) findViewById(R.id.puzzle_thumbnail_ImageView);
+        mThumbnail.setClickable(true);
+        mThumbnail.setOnClickListener(this);
+        mDownloadStatus = (ImageView) findViewById(R.id.puzzle_download_status_ImageView);
+        mDownloadStatus.setImageDrawable(null);
+        mDownloadStatus.setClickable(true);
+        mDownloadStatus.setOnClickListener(this);
+        mDownloadStatus_Drawable = getResources().getDrawable(R.drawable.download_status);
+        mPuzzleDescription = (TextView) findViewById(R.id.puzzle_description_TextView);
+        mPuzzleDescription.setClickable(true);
+        mPuzzleDescription.setOnClickListener(this);
+        mDownloadBool = false;
+
+    }
+
+    /**
+     * Inflates the view containing a thumbnail and puzzle name plus an optional
+     * image showing if the puzzle has previously been downloaded
+     */
+    private void InflateNormalView() {
+        this.removeView(mDownloadView);
+        this.addView(mNormalView);
+    }
+
+    /**
+     * Inflates the view containing the download bar to inform the user
+     * that the puzzle is in the process of being downloaded
+     */
+    private void InflateDownloadView() {
+        this.removeView(mNormalView);
+        this.addView(mDownloadView);
+    }
+
+    /**
+     * Sets the custom thumbnail for the view
+     * @param pIcon - The bitmap object that will be used as the thumbnail
+     */
     public void setThumbnail(Bitmap pIcon) {
 
         if (pIcon == null) {
@@ -141,13 +165,29 @@ public class PuzzleDownloadView extends LinearLayout implements View.OnClickList
             mThumbnail.setImageBitmap(pIcon);
         }
     }
+
+    /**
+     * Sets the TextView that contains the name of the puzzle
+     * @param pDescription - The text that will be provided to the TextView
+     */
     public void setPuzzleDescription(String pDescription) {
         mPuzzleDescription.setText(pDescription);
     }
+
+    /**
+     * Sets if the puzzle has been downloaded or not.
+     * @param pState - The boolean representing the download state:
+     *            True: Puzzle has been downloaded and tick image is shown
+     *            False: Puzzle has not been downloaded and no image is shown
+     */
     public void setDownloadStatus(Boolean pState) {
         mDownloadBool = pState;
         refreshDownloadStatusImage();
     }
+
+    /**
+     * Refreshes the state of the of the download state image
+     */
     private void refreshDownloadStatusImage() {
         if (mDownloadBool) {
             mDownloadStatus.setImageDrawable(mDownloadStatus_Drawable);

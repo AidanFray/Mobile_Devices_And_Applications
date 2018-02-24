@@ -11,10 +11,15 @@ import mobile.labs.acw.ExceptionHandling.Logging;
 
 public class Image {
 
-    public static Bitmap DownloadFromURL(String url) {
+    /**
+     * As the name suggest this method uses a url to download an images as an Bitmap objecy
+     * @param pURL - Url that contains an image
+     * @return - Bitmap object of the image
+     */
+    public static Bitmap DownloadFromURL(String pURL) {
 
         try {
-            URLConnection connection = new URL(url).openConnection();
+            URLConnection connection = new URL(pURL).openConnection();
             connection.setConnectTimeout(1000);
 
             return BitmapFactory.decodeStream(connection.getInputStream());
