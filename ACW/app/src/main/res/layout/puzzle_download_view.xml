@@ -14,13 +14,29 @@
         android:layout_margin="@dimen/puzzledownload_thumbnail_margin"
         android:contentDescription="@string/puzzleThumbnail_Description"/>
 
-    <TextView
-        android:id="@+id/puzzle_description_TextView"
+    <LinearLayout
         android:layout_width="0dp"
-        android:layout_height="match_parent"
         android:layout_weight="1.5"
-        android:gravity="center"
-        android:text="@string/blank_TextView" />
+        android:orientation="vertical"
+        android:layout_height="match_parent">
+
+        <TextView
+            android:id="@+id/puzzle_description_TextView"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="@string/blank_TextView" />
+
+        <TextView
+            android:id="@+id/puzzle_highscore_TextView"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="@string/highscore_blank_value"/>
+
+    </LinearLayout>
 
     <ImageView
         android:id="@+id/puzzle_download_status_ImageView"

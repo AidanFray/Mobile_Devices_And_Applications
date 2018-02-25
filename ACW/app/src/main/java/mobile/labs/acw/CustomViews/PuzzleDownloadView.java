@@ -35,9 +35,9 @@ public class PuzzleDownloadView extends LinearLayout implements View.OnClickList
     private ImageView mThumbnail;
     private ImageView mDownloadStatus;
     private TextView mPuzzleDescription;
+    private TextView mPuzzleHighscore;
 
     private Boolean mDownloadBool;
-
 
     public PuzzleDownloadView(Context context) {
         super(context);
@@ -130,6 +130,9 @@ public class PuzzleDownloadView extends LinearLayout implements View.OnClickList
         mPuzzleDescription = (TextView) findViewById(R.id.puzzle_description_TextView);
         mPuzzleDescription.setClickable(true);
         mPuzzleDescription.setOnClickListener(this);
+        mPuzzleHighscore = (TextView)findViewById(R.id.puzzle_highscore_TextView);
+        mPuzzleHighscore.setClickable(true);
+        mPuzzleHighscore.setOnClickListener(this);
         mDownloadBool = false;
 
     }
@@ -191,8 +194,10 @@ public class PuzzleDownloadView extends LinearLayout implements View.OnClickList
     private void refreshDownloadStatusImage() {
         if (mDownloadBool) {
             mDownloadStatus.setImageDrawable(mDownloadStatus_Drawable);
+            mPuzzleHighscore.setVisibility(VISIBLE);
         } else {
             mDownloadStatus.setImageDrawable(null);
+            mPuzzleHighscore.setVisibility(GONE);
         }
     }
 }
