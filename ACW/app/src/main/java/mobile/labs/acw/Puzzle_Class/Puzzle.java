@@ -115,8 +115,6 @@ public class Puzzle {
                     //Skips the empty square
                     if (bmp != null) {
                         canvas.drawBitmap(bmp, width, height, null);
-                    } else {
-                        //TODO put blank value here
                     }
                 }
             }

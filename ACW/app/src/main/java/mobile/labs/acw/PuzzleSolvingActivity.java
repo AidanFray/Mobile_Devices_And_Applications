@@ -47,6 +47,8 @@ public class PuzzleSolvingActivity extends Activity {
 
     private float tileWidth = 0;
 
+    private static boolean mTileCurrentlyMoving = false;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -89,6 +91,8 @@ public class PuzzleSolvingActivity extends Activity {
      * @param l
      */
     private void onPuzzleSelection(AdapterView<?> adapterView, View view, int i, long l) {
+        mTileCurrentlyMoving = false;
+
         TextView textView = (TextView) view;
         String puzzleName = textView.getText().toString();
 
@@ -241,7 +245,7 @@ public class PuzzleSolvingActivity extends Activity {
             private final int MOVE_DOWN = 2;
             private final int MOVE_LEFT = 3;
 
-            private final int SLIDE_SPEED = 50;
+            private final int SLIDE_SPEED = 100;
 
             /**
              * Class that is used to hold X and Y values for a position. It also contains
@@ -250,45 +254,45 @@ public class PuzzleSolvingActivity extends Activity {
             class Position {
 
                 public Position(int pX, int pY) {
-                x = pX;
-                y = pY;
-            }
+                    x = pX;
+                    y = pY;
+                }
 
                 /**
                  * Returns a Position after applying a move transformation
                  * @param pDirection - The intended transformation
                  * @return - The translated positon
                  */
-            public Position Move(int pDirection) {
+                public Position Move(int pDirection) {
 
-                Position newPosition = new Position(x, y);
-                switch (pDirection) {
+                    Position newPosition = new Position(x, y);
+                    switch (pDirection) {
 
-                    //Clockwise movement from top 0 (Up) -> 3(Left)
-                    case MOVE_UP:
-                        newPosition.y -= 1;
-                        break;
+                        //Clockwise movement from top 0 (Up) -> 3(Left)
+                        case MOVE_UP:
+                            newPosition.y -= 1;
+                            break;
 
-                    case MOVE_RIGHT:
-                        newPosition.x += 1;
-                        break;
+                        case MOVE_RIGHT:
+                            newPosition.x += 1;
+                            break;
 
-                    case MOVE_DOWN:
-                        newPosition.y += 1;
-                        break;
+                        case MOVE_DOWN:
+                            newPosition.y += 1;
+                            break;
 
-                    case MOVE_LEFT:
-                        newPosition.x -= 1;
-                        break;
+                        case MOVE_LEFT:
+                            newPosition.x -= 1;
+                            break;
 
+                    }
+                    return newPosition;
                 }
-                return newPosition;
+
+
+                int x;
+                int y;
             }
-
-
-            int x;
-            int y;
-        }
 
             /**
              * Method that deals with all types of movement. It either moves a single tile or
@@ -308,6 +312,8 @@ public class PuzzleSolvingActivity extends Activity {
                 //If the tile is next to a blank spot
                 if (checkIfValidMove(destinationPosition)) {
                     MoveTile(pDirectionID, pTile);
+
+                    //reset
                     return true;
                 }
 
@@ -322,10 +328,10 @@ public class PuzzleSolvingActivity extends Activity {
                     int deltaY = destinationPosition.y - currentPosition.y;
 
                     //Check to see if the values are at the edge of the board
-                    if((destinationPosition.y + deltaY < 0) || (destinationPosition.y + deltaY > sizeY)){
+                    if ((destinationPosition.y + deltaY < 0) || (destinationPosition.y + deltaY > sizeY)) {
                         return false;
                     }
-                    if((destinationPosition.x + deltaX < 0) || (destinationPosition.x + deltaX > sizeX)) {
+                    if ((destinationPosition.x + deltaX < 0) || (destinationPosition.x + deltaX > sizeX)) {
                         return false;
                     }
 
@@ -334,9 +340,10 @@ public class PuzzleSolvingActivity extends Activity {
                     //Recursively follows the row or column
                     if (Movement(pDirectionID, nextTile)) {
                         MoveTile(pDirectionID, pTile);
+                        return true;
                     }
                 }
-                return true;
+                return false;
             }
 
             /**
@@ -359,23 +366,25 @@ public class PuzzleSolvingActivity extends Activity {
                     mDeltaX = (destinationPosition.x - currentPosition.x) * mTileSize;
                     mDeltaY = (destinationPosition.y - currentPosition.y) * mTileSize;
 
+
                     TranslateAnimation animation =
                             new TranslateAnimation(0, mDeltaX, 0, mDeltaY);
 
                     animation.setDuration(SLIDE_SPEED);
                     animation.setRepeatCount(0);
-                    animation.setFillAfter(true);
+
 
                     //Sets what happens when the animation ends
                     animation.setAnimationListener(new Animation.AnimationListener() {
 
                         @Override
                         public void onAnimationStart(Animation animation) {
-
                         }
 
                         @Override
                         public void onAnimationEnd(Animation animation) {
+
+                            mTileCurrentlyMoving = false;
 
                             //Updates the position of the grid
                             tile.setX(tile.getX() + mDeltaX);
@@ -383,6 +392,7 @@ public class PuzzleSolvingActivity extends Activity {
 
                             //Clears the animation
                             tile.startAnimation(new TranslateAnimation(0f, 0f, 0f, 0f));
+
                         }
 
                         @Override
@@ -391,6 +401,8 @@ public class PuzzleSolvingActivity extends Activity {
                         }
                     });
 
+                    //Sets the bool that informs all other tiles another is moving
+                    mTileCurrentlyMoving = true;
                     pTile.startAnimation(animation);
                     moveOperation(currentPosition, destinationPosition);
                 }
@@ -458,22 +470,30 @@ public class PuzzleSolvingActivity extends Activity {
 
             @Override
             public void OnSwipeLeft() {
-                Movement(MOVE_LEFT, mCurrentTile);
+                if (!mTileCurrentlyMoving) {
+                    Movement(MOVE_LEFT, mCurrentTile);
+                }
             }
 
             @Override
             public void OnSwipeRight() {
-                Movement(MOVE_RIGHT, mCurrentTile);
+                if (!mTileCurrentlyMoving) {
+                    Movement(MOVE_RIGHT, mCurrentTile);
+                }
             }
 
             @Override
             public void OnSwipeUp() {
-                Movement(MOVE_UP, mCurrentTile);
+                if (!mTileCurrentlyMoving) {
+                    Movement(MOVE_UP, mCurrentTile);
+                }
             }
 
             @Override
             public void OnSwipeDown() {
-                Movement(MOVE_DOWN, mCurrentTile);
+                if (!mTileCurrentlyMoving) {
+                    Movement(MOVE_DOWN, mCurrentTile);
+                }
             }
         };
     }
@@ -484,6 +504,7 @@ public class PuzzleSolvingActivity extends Activity {
      */
     class OnSwipeListener implements View.OnTouchListener {
 
+        //TODO: Getters and setters
         private final Context mContext;
         private final GestureDetector mGestureDetector;
         public View mCurrentTile;
@@ -491,7 +512,6 @@ public class PuzzleSolvingActivity extends Activity {
 
         public float mDeltaX;
         public float mDeltaY;
-
 
         public OnSwipeListener(Context context) {
             mContext = context;
@@ -502,6 +522,7 @@ public class PuzzleSolvingActivity extends Activity {
         public boolean onTouch(View view, MotionEvent motionEvent) {
             mCurrentTile = view;
             mTileSize = view.getWidth();
+
             return mGestureDetector.onTouchEvent(motionEvent);
         }
 
@@ -525,6 +546,9 @@ public class PuzzleSolvingActivity extends Activity {
 
         }
 
+        /**
+         * Gesture object used to calcualte the direction of the swipe
+         */
         class SwipeGesture extends GestureDetector.SimpleOnGestureListener {
 
             private int THRESHOLD_SWIPE = 100;
