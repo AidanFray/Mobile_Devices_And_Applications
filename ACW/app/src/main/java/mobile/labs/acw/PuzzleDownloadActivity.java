@@ -1,10 +1,16 @@
 package mobile.labs.acw;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
@@ -29,7 +35,11 @@ import mobile.labs.acw.Puzzle_Class.Puzzle;
  */
 public class PuzzleDownloadActivity extends AppCompatActivity {
 
+    private ActionBar mActionBar;
     private LinearLayout mDownloadLayout;
+    private List<PuzzleDownloadView> mDownloadViews;
+
+    private boolean mJustShowDownloadedPuzzles = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,6 +57,61 @@ public class PuzzleDownloadActivity extends AppCompatActivity {
         }
         else {
             loadIndexFile();
+        }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.actionbar_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle item selection
+        switch (item.getItemId()) {
+            case R.id.filterAction:
+
+                final String[] menu_items = new String[] {
+                        getString(R.string.filter_menu_ShowDownloaded),
+                        getString(R.string.filter_menu_Clear)};
+
+                //Builds an alert dialog
+                AlertDialog.Builder alert = new AlertDialog.Builder(this);
+                alert.setTitle("Pick Filter");
+                alert.setItems(menu_items, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+
+                        //TODO: Add more filters
+                        // - Needs a filter for dimensions
+                        // - Needs a filter for never played
+                        //Checks the cached version of the views is available
+                        if (mDownloadViews != null) {
+                            //Just show downloaded optio
+                            if (menu_items[i].equals(getString(R.string.filter_menu_ShowDownloaded))) {
+                                mJustShowDownloadedPuzzles = true;
+                            }
+                            else if(menu_items[i].equals(getString(R.string.filter_menu_Clear))) {
+                                mJustShowDownloadedPuzzles = false;
+                            }
+
+                            addAllViews(mDownloadViews);
+                        }
+                        //If there are no active views
+                        else {
+                            Toast.makeText(
+                                    PuzzleDownloadActivity.this,
+                                    "Filter cannot be applied at this time, please wait for a download",
+                                    Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                }).show();
+
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
         }
     }
 
@@ -101,8 +166,18 @@ public class PuzzleDownloadActivity extends AppCompatActivity {
         //Hides the loading bar and spacing
         mDownloadLayout.removeAllViews();
 
-        for (PuzzleDownloadView view: puzzleDownloadView) {
-            mDownloadLayout.addView(view);
+        //Just shows the downloaded puzzles
+        if (mJustShowDownloadedPuzzles) {
+            for (PuzzleDownloadView view: puzzleDownloadView) {
+                if (view.getDownloadBool()) {
+                    mDownloadLayout.addView(view);
+                }
+            }
+
+        } else {
+            for (PuzzleDownloadView view: puzzleDownloadView) {
+                mDownloadLayout.addView(view);
+            }
         }
     }
 
@@ -195,6 +270,7 @@ public class PuzzleDownloadActivity extends AppCompatActivity {
             super.onPostExecute(aVoid);
 
             //Adds all the created views to the window
+            mDownloadViews = downloadViewList;
             addAllViews(downloadViewList);
         }
 

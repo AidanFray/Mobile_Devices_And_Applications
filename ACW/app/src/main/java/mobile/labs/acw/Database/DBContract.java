@@ -12,17 +12,22 @@ public final class DBContract {
     }
 
     public static class Puzzle implements BaseColumns {
-        static final String TABLE_NAME = "Puzzles";
-        static final String TABLE_PRIMARY_KEY = "PuzzleName VARCHAR";
-        static final String TABLE_PRIMARY_KEY_NAME = TABLE_PRIMARY_KEY.split(" ")[0];
+        public static final String TABLE_NAME = "Puzzles";
+        public static final String TABLE_PRIMARY_KEY = "PuzzleName VARCHAR";
+        public static final String TABLE_PRIMARY_KEY_NAME = TABLE_PRIMARY_KEY.split(" ")[0];
 
-        static final String[] TABLE_COLUMNS = {
-                "Highscore INT",
-                "TimesPlayed INT",
-                "TimesCompleted INT",
-                "PuzzleDimension VARCHAR"};
+        public static final String COLUMN_HIGHSCORE = "Highscore";
+        public static final String COLUMN_TIMES_PLAYED = "TimesPlayed";
+        public static final String COLUMN_TIMES_COMPLETED = "TimesCompleted";
+        public static final String COLUMN_PUZZLE_DIMENSIONS = "PuzzleDimension";
 
-        static String CREATE_TABLE() {
+        public static final String[] TABLE_COLUMNS = {
+                COLUMN_HIGHSCORE + " INT",
+                COLUMN_TIMES_PLAYED + " INT",
+                COLUMN_TIMES_COMPLETED + " INT",
+                COLUMN_PUZZLE_DIMENSIONS +" VARCHAR"};
+
+        public static String CREATE_TABLE() {
             String sqlCmd =  String.format("CREATE TABLE IF NOT EXISTS %s (", TABLE_NAME);
 
             sqlCmd += TABLE_PRIMARY_KEY + " PRIMARY KEY, ";

@@ -47,6 +47,8 @@ public class PuzzleSolvingActivity extends Activity {
 
     private float tileWidth = 0;
 
+    private static final String Spinner_Nothing_Selected = "Please select a puzzle";
+
     private static boolean mTileCurrentlyMoving = false;
 
     @Override
@@ -94,23 +96,30 @@ public class PuzzleSolvingActivity extends Activity {
         mTileCurrentlyMoving = false;
 
         TextView textView = (TextView) view;
-        String puzzleName = textView.getText().toString();
+        String textViewContent = textView.getText().toString();
 
-        //Loads the puzzle
-        Puzzle puzzle = new Puzzle(this, puzzleName);
+        if (!textViewContent.equals(Spinner_Nothing_Selected)){
+            String puzzleName = textViewContent;
 
-        //Puts the image into a linear list
-        List<Bitmap> imageList = new ArrayList<>();
-        for (Row row : puzzle.getPuzzlesImages()) {
-            //Gets a list of the images
-            List<Bitmap> images = row.getElements();
+            //Loads the puzzle
+            Puzzle puzzle = new Puzzle(this, puzzleName);
 
-            for (Bitmap image : images) {
-                imageList.add(image);
+            //Puts the image into a linear list
+            List<Bitmap> imageList = new ArrayList<>();
+            for (Row row : puzzle.getPuzzlesImages()) {
+                //Gets a list of the images
+                List<Bitmap> images = row.getElements();
+
+                for (Bitmap image : images) {
+                    imageList.add(image);
+                }
             }
-        }
 
-        generateGrid(puzzle.getPuzzleSizeX(), puzzle.getPuzzleSizeY(), imageList);
+            //Increments the number of times played
+            puzzle.UpdateTimesPlayed(this);
+
+            generateGrid(puzzle.getPuzzleSizeX(), puzzle.getPuzzleSizeY(), imageList);
+        }
     }
 
     /**
@@ -138,6 +147,10 @@ public class PuzzleSolvingActivity extends Activity {
                 = getSharedPreferences(getString(R.string.puzzleSharedPreferencesID), MODE_PRIVATE);
 
         List<String> downloadedPuzzles = new ArrayList<>();
+
+        //Adds the nothing selected value
+        downloadedPuzzles.add(Spinner_Nothing_Selected);
+
         for (int i = 0; i < indexValues.length(); i++) {
             String puzzleName = (String) JSON.GetIndex(indexValues, i);
 

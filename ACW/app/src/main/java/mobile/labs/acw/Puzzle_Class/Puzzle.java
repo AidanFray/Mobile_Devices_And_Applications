@@ -16,11 +16,10 @@ import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
+import mobile.labs.acw.Database.DBContract;
+import mobile.labs.acw.Database.Database;
 import mobile.labs.acw.ExceptionHandling.Logging;
 import mobile.labs.acw.R;
-
-//TODO: MetaData needs to be saved as well so puzzles can be sorted and filtered
-// This can be done with a database and it will be easy to store and retrieve data
 
 /**
  * Class that represents a downloaded puzzle. It contains all the information required to
@@ -316,5 +315,91 @@ public class Puzzle {
             Logging.Exception(e);
         }
         return null;
+    }
+
+    /**
+     * Grabs the value of the highscore from the local database
+     * @param pContext - The calling context
+     * @return - The value obtained as a string
+     */
+    public String getHighscore(Context pContext) {
+        return GetItemFromDatabase(pContext, DBContract.Puzzle.COLUMN_HIGHSCORE);
+    }
+
+    /**
+     * Grabs the value of times played from the database
+     * @param pContext - The calling context
+     * @return - The value obtained as a string
+     */
+    public String getTimesPlayed(Context pContext) {
+        return GetItemFromDatabase(pContext, DBContract.Puzzle.COLUMN_TIMES_PLAYED);
+    }
+
+    /**
+     * Grabs the value of how many times the puzzle has been completed from the database
+     * @param pContext - The calling context
+     * @return - The value obtained as a string
+     */
+    public String getTimesCompleted(Context pContext) {
+        return GetItemFromDatabase(pContext, DBContract.Puzzle.COLUMN_TIMES_COMPLETED);
+    }
+
+    public String getPuzzleDimensions(Context pContext) {
+        return GetItemFromDatabase(pContext, DBContract.Puzzle.COLUMN_PUZZLE_DIMENSIONS);
+    }
+
+    /**
+     * Updates the high score of the puzzle with the entered value. The method also performs
+     * validation of the entered value
+     * @param pContext - The calling context
+     * @param pValue - The new highscore value
+     */
+    public void UpdateHighscore(Context pContext, int pValue) {
+        Database db = new Database(pContext);
+        String columnName = DBContract.Puzzle.COLUMN_HIGHSCORE;
+
+        int previousHighScore = Integer.parseInt(db.ReadFromDatabase(mName, columnName));
+        if (pValue > previousHighScore) {
+            db.UpdateCell(mName, columnName, String.valueOf(pValue));
+        }
+    }
+
+    /**
+     * Increments the number of times played every time is method is called
+     */
+    public void UpdateTimesPlayed(Context pContext) {
+        IncrementDatabaseCell(pContext, DBContract.Puzzle.COLUMN_TIMES_PLAYED);
+    }
+
+    /**
+     * Increments the number of times the puzzle has been completed when this method is called
+     */
+    public void UpdateTimesCompleted(Context pContext) {
+        IncrementDatabaseCell(pContext, DBContract.Puzzle.COLUMN_TIMES_COMPLETED);
+    }
+
+    /**
+     * The general private method that is used to increment a value in a database
+     * @param pContext - This provided context
+     * @param pColumnIndex - The index value to be incremented
+     */
+    private void IncrementDatabaseCell(Context pContext, String pColumnName) {
+        Database db = new Database(pContext);
+
+        //Simply increments current value
+        int previousValue = Integer.parseInt(db.ReadFromDatabase(mName, pColumnName));
+        previousValue++;
+        db.UpdateCell(mName, pColumnName, String.valueOf(previousValue));
+    }
+
+    /**
+     * TODO
+     * @param pContext
+     * @param pColumnName
+     * @return
+     */
+    private String GetItemFromDatabase(Context pContext, String pColumnName) {
+        Database db = new Database(pContext);
+        return db.ReadFromDatabase(mName, pColumnName);
     }
 }

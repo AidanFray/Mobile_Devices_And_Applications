@@ -4,7 +4,6 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.widget.Toast;
 
 import mobile.labs.acw.ExceptionHandling.Logging;
 
@@ -20,19 +19,22 @@ public class Database {
      * @param pValues
      */
     public void SaveToDatabase(String pPrivateKey, String[] pValues) {
-        SQLiteDatabase database = new DatabaseHelper(mContext).getWritableDatabase();
-        ContentValues values = new ContentValues();
+        try {
+            SQLiteDatabase database = new DatabaseHelper(mContext).getWritableDatabase();
+            ContentValues values = new ContentValues();
 
-        //Adds the private key
-        values.put(DBContract.Puzzle.TABLE_PRIMARY_KEY.split(" ")[0], pPrivateKey);
+            //Adds the private key
+            values.put(DBContract.Puzzle.TABLE_PRIMARY_KEY.split(" ")[0], pPrivateKey);
 
-        for (int i = 0; i < DBContract.Puzzle.TABLE_COLUMNS.length; i++) {
-            String key = DBContract.Puzzle.TABLE_COLUMNS[i].split(" ")[0];
-            values.put(key, pValues[i]);
+            for (int i = 0; i < DBContract.Puzzle.TABLE_COLUMNS.length; i++) {
+                String key = DBContract.Puzzle.TABLE_COLUMNS[i].split(" ")[0];
+                values.put(key, pValues[i]);
+            }
+
+            database.insert(DBContract.Puzzle.TABLE_NAME, null, values);
+        } catch (Exception e) {
+            Logging.Exception(e);
         }
-
-        database.insert(DBContract.Puzzle.TABLE_NAME, null, values);
-        Toast.makeText(mContext, "Saved!", Toast.LENGTH_LONG).show();
     }
 
     /**
@@ -80,7 +82,7 @@ public class Database {
      * @param pColumnName - The column that needs changing
      * @param pValue - The value to change the cell to
      */
-    private void UpdateCell(String pPuzzleName, String pColumnName, String pValue) {
+    public void UpdateCell(String pPuzzleName, String pColumnName, String pValue) {
         SQLiteDatabase database = new DatabaseHelper(mContext).getWritableDatabase();
 
         String sqlCmd = String.format("UPDATE %s SET %s=\'%s\' WHERE %s=\'%s\'",
@@ -89,21 +91,5 @@ public class Database {
                 DBContract.Puzzle.TABLE_PRIMARY_KEY_NAME, pPuzzleName);
 
         database.execSQL(sqlCmd);
-    }
-
-
-    //TODO: Validation for these updates?
-    // for example Update highscore could check that the entered value is larger than
-    // the value contained in the database?
-    public void UpdateHighscore(String pPuzzleName, String pValue) {
-        UpdateCell(pPuzzleName, DBContract.Puzzle.TABLE_COLUMNS[0], pValue);
-    }
-
-    public void UpdateTimesPlayed(String pPuzzleName, String pValue) {
-        UpdateCell(pPuzzleName, DBContract.Puzzle.TABLE_COLUMNS[1], pValue);
-    }
-
-    public void UpdateTimesCompleted(String pPuzzleName, String pValue) {
-        UpdateCell(pPuzzleName, DBContract.Puzzle.TABLE_COLUMNS[2], pValue);
     }
 }

@@ -24,4 +24,7 @@
     <string name="puzzleSharedPreferencesID">Puzzles</string>
     <string name="jsonArrayIndexName">PuzzleIndex</string>
     <string name="initialPositionsFileName">initial_positions.dat</string>
+
+    <string name="filter_menu_ShowDownloaded">Show Downloaded</string>
+    <string name="filter_menu_Clear"><b><i>Clear Filter</i></b></string>
 </resources>

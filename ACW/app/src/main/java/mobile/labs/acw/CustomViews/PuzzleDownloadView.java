@@ -13,6 +13,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import mobile.labs.acw.Database.Database;
 import mobile.labs.acw.ExceptionHandling.Logging;
 import mobile.labs.acw.Puzzle_Class.DownloadFullPuzzle;
 import mobile.labs.acw.Puzzle_Class.Puzzle;
@@ -38,6 +39,7 @@ public class PuzzleDownloadView extends LinearLayout implements View.OnClickList
     private TextView mPuzzleHighscore;
 
     private Boolean mDownloadBool;
+    public Boolean getDownloadBool() {return mDownloadBool;}
 
     public PuzzleDownloadView(Context context) {
         super(context);
@@ -73,6 +75,14 @@ public class PuzzleDownloadView extends LinearLayout implements View.OnClickList
                         editor.putBoolean(puzzleName, true);
                         editor.commit();
 
+                        //Saves an instance of a puzzle to a database
+                        Database db = new Database(getContext());
+                        String[] values = new String[] {"0", "0", "0",
+                                result.getPuzzleSizeX() + "x" + result.getPuzzleSizeY()};
+
+                        db.SaveToDatabase(puzzleName, values);
+
+                        //Saves the puzzle data to file
                         result.Save(getContext());
 
                         //Gets the first image
