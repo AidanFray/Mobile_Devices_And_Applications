@@ -5,12 +5,20 @@
     android:layout_width="match_parent"
     android:layout_height="@dimen/puzzleDownload_height">
 
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:text="@string/downloading_text_TextView"
+        android:gravity="center"/>
+
     <ProgressBar
         android:id="@+id/puzzle_download_progess"
         style="?android:attr/progressBarStyleHorizontal"
         android:layout_gravity="center"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
         android:indeterminate="false"
         android:layout_margin="@dimen/puzzledownload_download_view_margin"/>
 </LinearLayout>

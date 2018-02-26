@@ -26,7 +26,8 @@
             android:layout_height="0dp"
             android:layout_weight="1"
             android:gravity="center"
-            android:text="@string/blank_TextView" />
+            android:text="@string/blank_TextView"
+            android:textStyle="bold"/>
 
         <TextView
             android:id="@+id/puzzle_highscore_TextView"

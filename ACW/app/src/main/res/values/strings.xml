@@ -2,6 +2,7 @@
     <string name="app_name">ACW</string>
     <string name="blank_TextView">Blank TextView String</string>
     <string name="highscore_blank_value">Highscore: 0</string>
+    <string name="downloading_text_TextView"><b>Downloading...</b></string>
 
     <!-- MainActivity Button texts -->
     <string name="puzzle_solving_button_text">Solve Puzzle</string>
