@@ -39,6 +39,11 @@ public class PuzzleGridFragment extends Fragment {
 
     float tileWidth;
 
+
+    float mPadding;
+    int mTileSizeX;
+    int mTileSizeY;
+
     //Controls
     private RelativeLayout mGridLayout;
 
@@ -76,16 +81,7 @@ public class PuzzleGridFragment extends Fragment {
             public void run() {
 
                 mGridLayout.getLayoutParams().height = mGridLayout.getWidth();
-
-                float padding = (getResources().getDimension(R.dimen.gridCustomBorder) * 2);
-                float tileWidthX = mGridLayout.getWidth() - padding;
-                float tileWidthY = mGridLayout.getHeight() - padding;
-
-                if (tileWidthX > tileWidthY) {
-                    tileWidth = tileWidthX;
-                } else {
-                    tileWidth = tileWidthY;
-                }
+                mPadding = (getResources().getDimension(R.dimen.gridCustomBorder) * 2);
             }
         });
 
@@ -126,7 +122,6 @@ public class PuzzleGridFragment extends Fragment {
         if (mCurrentPuzzle != null) {
             samePuzzle = textViewContent.equals(mCurrentPuzzle.getName());
         }
-
 
         //Stops creating the view if it's the default menu or it was the same puzzle as before
         if (!textViewContent.equals(getString(R.string.NoPuzzleSelected)) &&
@@ -190,7 +185,8 @@ public class PuzzleGridFragment extends Fragment {
         mGridElements = new ImageView[sizeY][sizeX];
 
         //Grabs the dimensions of each grid
-        int stepSize = (int) (tileWidth / sizeX);
+        mTileSizeX = ((mGridLayout.getWidth() - (int) mPadding) / sizeX);
+        mTileSizeY = ((mGridLayout.getHeight() - (int) mPadding) / sizeY);
 
         for (int y = 0; y < sizeY; y++) {
             for (int x = 0; x < sizeX; x++) {
@@ -202,10 +198,14 @@ public class PuzzleGridFragment extends Fragment {
                     view = new ImageView(getContext());
                     view.setImageBitmap(bmp);
 
-                    view.setMaxWidth(stepSize);
-                    view.setMinimumWidth(stepSize);
-                    view.setMaxHeight(stepSize);
-                    view.setMinimumHeight(stepSize);
+                    view.setMaxWidth(mTileSizeX);
+                    view.setMinimumWidth(mTileSizeX);
+
+                    view.setMaxHeight(mTileSizeY);
+                    view.setMinimumHeight(mTileSizeY);
+
+                    view.setAdjustViewBounds(false);
+                    view.setScaleType(ImageView.ScaleType.FIT_XY);
 
                     mGridLayout.addView(view);
 
@@ -213,8 +213,8 @@ public class PuzzleGridFragment extends Fragment {
                     RelativeLayout.LayoutParams param
                             = (RelativeLayout.LayoutParams) view.getLayoutParams();
 
-                    param.leftMargin = (x * stepSize);
-                    param.topMargin = (y * stepSize);
+                    param.leftMargin = (x * mTileSizeX);
+                    param.topMargin = (y * mTileSizeY);
                     param.bottomMargin = 0;
                     param.rightMargin = 0;
 
@@ -225,15 +225,8 @@ public class PuzzleGridFragment extends Fragment {
         }
 
         //Puts the height into a sort of dynamic wrap content mode
-        mGridLayout.getLayoutParams().height = -5;
+        //mGridLayout.getLayoutParams().height = -5;
         mGridLayout.invalidate();
-
-        //TODO: Test this?
-        if (mGridLayout.getLayoutParams().height > Screen.getHeight(getActivity())) {
-            mGridLayout.setScaleY(0.5f);
-            mGridLayout.setScaleX(0.5f);
-        }
-
     }
 
     /**
@@ -460,8 +453,8 @@ public class PuzzleGridFragment extends Fragment {
 
                     mNumberOfMoves++;
 
-                    mDeltaX = (destinationPosition.x - currentPosition.x) * mTileSize;
-                    mDeltaY = (destinationPosition.y - currentPosition.y) * mTileSize;
+                    mDeltaX = (destinationPosition.x - currentPosition.x) * mTileSizeX;
+                    mDeltaY = (destinationPosition.y - currentPosition.y) * mTileSizeY;
 
                     TranslateAnimation animation =
                             new TranslateAnimation(0, mDeltaX, 0, mDeltaY);

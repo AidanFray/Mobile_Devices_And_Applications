@@ -2,8 +2,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/gridLayout"
     android:layout_width="match_parent"
-    android:layout_height="0dp"
+    android:layout_height="match_parent"
     android:layout_margin="20dp"
     android:layout_gravity="center"
     android:background="@drawable/custom_border"
-    tools:context="mobile.labs.acw.PuzzleGridFragment"></RelativeLayout>
+    tools:context="mobile.labs.acw.PuzzleGridFragment" />
