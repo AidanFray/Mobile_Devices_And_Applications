@@ -313,7 +313,7 @@ public class PuzzleGridFragment extends Fragment {
      */
     private double calculateScore(double pTimeTaken, int pMovesPerformed) {
         //A percentage reduction of the score
-        int deduction = MAX_SCORE / 1000;
+        int deduction = MAX_SCORE / 500;
         double score = MAX_SCORE - ((pTimeTaken * deduction) + (pMovesPerformed * deduction));
 
         //Check to make sure you can't have a negative score

@@ -5,7 +5,6 @@ import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
@@ -35,7 +34,6 @@ import mobile.labs.acw.Puzzle_Class.Puzzle;
  */
 public class PuzzleDownloadActivity extends AppCompatActivity {
 
-    private ActionBar mActionBar;
     private LinearLayout mDownloadLayout;
     private List<PuzzleDownloadView> mDownloadViews;
 
@@ -299,6 +297,9 @@ public class PuzzleDownloadActivity extends AppCompatActivity {
                     if (downloaded) {
                         Puzzle puzzle = new Puzzle(PuzzleDownloadActivity.this, name);
                         downloadRow.setThumbnail(puzzle.getPuzzleThumbnail());
+
+                        String highScore = puzzle.getHighscore(PuzzleDownloadActivity.this);
+                        downloadRow.setHighScore(highScore);
                     }
                     else {
                         //Sets the thumbnail to a default photo

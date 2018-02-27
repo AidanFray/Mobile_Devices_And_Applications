@@ -101,7 +101,6 @@ public class PuzzleDownloadView extends LinearLayout implements View.OnClickList
         }
     }
 
-
     /**
      * Code that is used to create objects and inflate views
      */
@@ -185,6 +184,14 @@ public class PuzzleDownloadView extends LinearLayout implements View.OnClickList
      */
     public void setPuzzleDescription(String pDescription) {
         mPuzzleDescription.setText(pDescription);
+    }
+
+    /**
+     * Method that sets the high score of the view
+     * @param pValue
+     */
+    public void setHighScore(String pValue) {
+        mPuzzleHighscore.setText(String.format(getContext().getString(R.string.downloadView_Highscore_TextView), String.valueOf(pValue)));
     }
 
     /**

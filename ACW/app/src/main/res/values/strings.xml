@@ -35,4 +35,5 @@
     <string name="puzzleWin_Score">Score: %s</string>
 
     <string name="NoPuzzleSelected">Please select a puzzle</string>
+    <string name="downloadView_Highscore_TextView">Highscore: %s</string>
 </resources>
