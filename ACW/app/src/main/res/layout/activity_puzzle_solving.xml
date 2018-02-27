@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -15,10 +15,9 @@
         <RelativeLayout
             android:id="@+id/gridLayout"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="20dp"
-            android:layout_gravity="center"
-            android:background="@drawable/custom_border"/>
+            android:layout_height="wrap_content">
+
+        </RelativeLayout>
 
         <Space
             android:layout_width="match_parent"
@@ -33,4 +32,4 @@
             android:layout_weight="1"/>
 
     </LinearLayout>
-</android.support.constraint.ConstraintLayout>
+</RelativeLayout>

@@ -19,7 +19,9 @@
             </intent-filter>
         </activity>
         <activity android:name=".PuzzleDownloadActivity" />
-        <activity android:name=".PuzzleSolvingActivity"></activity>
+        <activity
+            android:name=".PuzzleSolvingActivity"
+            android:configChanges="keyboardHidden|orientation"></activity>
     </application>
 
 </manifest>
