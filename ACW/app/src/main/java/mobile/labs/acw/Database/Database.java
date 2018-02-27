@@ -15,8 +15,9 @@ public class Database {
     }
 
     /**
-     * TODO:
-     * @param pValues
+     * Method that saves data to a database
+     * @param pPrivateKey - The PKey for the database
+     * @param pValues - The list of values to be saved
      */
     public void SaveToDatabase(String pPrivateKey, String[] pValues) {
         try {
@@ -38,7 +39,10 @@ public class Database {
     }
 
     /**
-     * TODO
+     * Read a value from the database
+     * @param pPuzzleName - The puzzle to access data for
+     * @param pColumnName - The name of the element that is to be accessed
+     * @return - The value retrieved from the database
      */
     public String ReadFromDatabase(String pPuzzleName, String pColumnName) {
         SQLiteDatabase database = new DatabaseHelper(mContext).getReadableDatabase();

@@ -89,7 +89,7 @@ public class PuzzleDownloadActivity extends AppCompatActivity {
                         // - Needs a filter for never played
                         //Checks the cached version of the views is available
                         if (mDownloadViews != null) {
-                            //Just show downloaded optio
+                            //Just show downloaded options
                             if (menu_items[i].equals(getString(R.string.filter_menu_ShowDownloaded))) {
                                 mJustShowDownloadedPuzzles = true;
                             }

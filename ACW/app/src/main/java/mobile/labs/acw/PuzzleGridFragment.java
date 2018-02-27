@@ -1,8 +1,8 @@
 package mobile.labs.acw;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.graphics.Bitmap;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
@@ -39,7 +39,6 @@ public class PuzzleGridFragment extends Fragment {
 
     float tileWidth;
 
-
     float mPadding;
     int mTileSizeX;
     int mTileSizeY;
@@ -54,9 +53,8 @@ public class PuzzleGridFragment extends Fragment {
     private static boolean mTileCurrentlyMoving = false;
 
     private OnFragmentInteractionListener mListener;
-
     public interface OnFragmentInteractionListener {
-        void onFragmentInteraction(Uri uri);
+        void onFragmentInteraction();
     }
 
     public PuzzleGridFragment() {
@@ -106,14 +104,21 @@ public class PuzzleGridFragment extends Fragment {
     }
 
     /**
-     * TODO
-     *
-     * @param view
+     * Resets the encasing Activity
      */
-    public void onPuzzleSelection(View view) {
+    private void Reset() {
+        mListener.onFragmentInteraction();
+    }
+
+    /**
+     * Method called from the encasing Activity when a puzzle is selected from the spinner
+     *
+     * @param pView - The spinner view that was clicked
+     */
+    public void onPuzzleSelection(View pView) {
         mTileCurrentlyMoving = false;
 
-        TextView textView = (TextView) view;
+        TextView textView = (TextView) pView;
         String textViewContent = textView.getText().toString();
 
         mGridLayout.removeAllViews();
@@ -237,10 +242,9 @@ public class PuzzleGridFragment extends Fragment {
     }
 
     /**
-     * TODO
-     *
-     * @param sizeX
-     * @param sizeY
+     * Generates the winning layout dynamically for a grid
+     * @param sizeX - Size of the x side of the puzzle
+     * @param sizeY - Size of the y side of the puzzle
      */
     private void generateWinningLayout(int sizeX, int sizeY) {
 
@@ -255,7 +259,7 @@ public class PuzzleGridFragment extends Fragment {
     }
 
     /**
-     * TODO
+     * Runs when the winning conditions have been matched for the puzzle
      */
     private void puzzleComplete() {
         long elapsedTime = (System.nanoTime() - mStartTime);
@@ -276,7 +280,7 @@ public class PuzzleGridFragment extends Fragment {
         alert.setTitle(R.string.puzzleWin_Title);
 
         //Menu items
-        String highScoreString = getString(R.string.puzzleWin_Score) + score;
+        String highScoreString = String.format(getString(R.string.puzzleWin_Score), String.valueOf(score));
         String timeString = String.format(getString(R.string.puzzleWin_TimeTaken), seccondsPassed);
         String moveString = String.format(getString(R.string.puzzleWin_MovesTaken), String.valueOf(mNumberOfMoves));
 
@@ -285,26 +289,27 @@ public class PuzzleGridFragment extends Fragment {
                 timeString,
                 moveString};
 
-//        alert.setOnDismissListener(new DialogInterface.OnDismissListener() {
-//            @Override
-//            public void onDismiss(DialogInterface dialogInterface) {
-//                ResetActivity();
-//            }
-//        });
-//        alert.setOnCancelListener(new DialogInterface.OnCancelListener() {
-//            @Override
-//            public void onCancel(DialogInterface dialogInterface) {
-//                ResetActivity();
-//            }
-//        });
+        alert.setOnDismissListener(new DialogInterface.OnDismissListener() {
+            @Override
+            public void onDismiss(DialogInterface dialogInterface) {
+                Reset();
+            }
+        });
+        alert.setOnCancelListener(new DialogInterface.OnCancelListener() {
+            @Override
+            public void onCancel(DialogInterface dialogInterface) {
+                Reset();
+            }
+        });
 
         alert.setItems(scoreArray, null).show();
     }
 
     /**
-     * TODO:
-     *
-     * @return
+     * Method that calculates the score for the puzzle. The score is calculated by taking
+     * a small percentage of the MAX_SCORE after either a whole second has passed or a move has
+     * been performed
+     * @return - The calculated score
      */
     private double calculateScore(double pTimeTaken, int pMovesPerformed) {
         //A percentage reduction of the score
@@ -552,7 +557,7 @@ public class PuzzleGridFragment extends Fragment {
             }
 
             /**
-             * TODO
+             * Checks the current state against the winning state to see if they match
              */
             private Boolean checkForWin() {
                 return Arrays.deepEquals(mCurrentLayout, mWinningLayout);
@@ -584,28 +589,28 @@ public class PuzzleGridFragment extends Fragment {
             @Override
             public void OnSwipeLeft() {
                 if (!mTileCurrentlyMoving) {
-                    Movement(MOVE_LEFT, mCurrentTile);
+                    Movement(MOVE_LEFT, getCurrentTile());
                 }
             }
 
             @Override
             public void OnSwipeRight() {
                 if (!mTileCurrentlyMoving) {
-                    Movement(MOVE_RIGHT, mCurrentTile);
+                    Movement(MOVE_RIGHT, getCurrentTile());
                 }
             }
 
             @Override
             public void OnSwipeUp() {
                 if (!mTileCurrentlyMoving) {
-                    Movement(MOVE_UP, mCurrentTile);
+                    Movement(MOVE_UP, getCurrentTile());
                 }
             }
 
             @Override
             public void OnSwipeDown() {
                 if (!mTileCurrentlyMoving) {
-                    Movement(MOVE_DOWN, mCurrentTile);
+                    Movement(MOVE_DOWN, getCurrentTile());
                 }
             }
         };
@@ -617,12 +622,16 @@ public class PuzzleGridFragment extends Fragment {
      */
     class OnSwipeListener implements View.OnTouchListener {
 
-        //TODO: Getters and setters
         private final Context mContext;
         private final GestureDetector mGestureDetector;
-        public View mCurrentTile;
-        public int mTileSize;
 
+        private View mCurrentTile;
+
+        public View getCurrentTile() {
+            return mCurrentTile;
+        }
+
+        //Movement speeds
         public float mDeltaX;
         public float mDeltaY;
 
@@ -634,8 +643,6 @@ public class PuzzleGridFragment extends Fragment {
         @Override
         public boolean onTouch(View view, MotionEvent motionEvent) {
             mCurrentTile = view;
-            mTileSize = view.getWidth();
-
             return mGestureDetector.onTouchEvent(motionEvent);
         }
 

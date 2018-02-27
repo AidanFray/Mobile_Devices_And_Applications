@@ -393,10 +393,10 @@ public class Puzzle {
     }
 
     /**
-     * TODO
-     * @param pContext
-     * @param pColumnName
-     * @return
+     * Gets a single cell from the database
+     * @param pContext - The calling context
+     * @param pColumnName - The column cell name
+     * @return - The value obtained from the database
      */
     private String GetItemFromDatabase(Context pContext, String pColumnName) {
         Database db = new Database(pContext);

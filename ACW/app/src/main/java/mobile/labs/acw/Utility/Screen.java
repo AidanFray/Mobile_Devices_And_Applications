@@ -1,4 +1,4 @@
-package mobile.labs.acw;
+package mobile.labs.acw.Utility;
 
 import android.app.Activity;
 import android.graphics.Point;
@@ -6,7 +6,7 @@ import android.view.Display;
 
 
 /**
- * TODO
+ * Static class that is used to grab dimensions of the screen
  */
 public class Screen {
 

@@ -1,7 +1,7 @@
 package mobile.labs.acw;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
@@ -61,6 +61,7 @@ public class PuzzleSolvingActivity extends FragmentActivity
             mGridFragment = (PuzzleGridFragment) getSupportFragmentManager().getFragment(savedInstanceState, FRAGMENT_TAG);
         }
 
+
         loadDownloadedPuzzles();
     }
 
@@ -70,13 +71,6 @@ public class PuzzleSolvingActivity extends FragmentActivity
 
         //Save the fragment's instance
         getSupportFragmentManager().putFragment(outState, FRAGMENT_TAG, mGridFragment);
-    }
-
-    /**
-     * TODO
-     */
-    private void ResetActivity() {
-        this.recreate();
     }
 
     /**
@@ -95,7 +89,7 @@ public class PuzzleSolvingActivity extends FragmentActivity
     }
 
     /**
-     * TODO
+     * Loads the names of the downloaded puzzles that are currently present on the device
      */
     private void loadDownloadedPuzzles() {
 
@@ -161,8 +155,21 @@ public class PuzzleSolvingActivity extends FragmentActivity
                 Toast.LENGTH_LONG).show();
     }
 
+    /**
+     * Resets the entire Activity to the initial state
+     */
+    private void resetActivity() {
+        //Resets the grid fragment
+        Intent intent = getIntent();
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+        overridePendingTransition(0, 0);
+        finish();
+        startActivity(intent);
+        finish();
+    }
+
     @Override
-    public void onFragmentInteraction(Uri uri) {
-        Toast.makeText(this, "Test", Toast.LENGTH_SHORT);
+    public void onFragmentInteraction() {
+        resetActivity();
     }
 }
