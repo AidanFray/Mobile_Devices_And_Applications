@@ -2,9 +2,11 @@ package mobile.labs.acw;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.os.Bundle;
+import android.support.v7.app.AlertDialog;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
@@ -24,7 +26,9 @@ import org.json.JSONObject;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import mobile.labs.acw.JSON.JSON;
 import mobile.labs.acw.Puzzle_Class.Puzzle;
@@ -37,6 +41,14 @@ import mobile.labs.acw.Puzzle_Class.Row;
  */
 public class PuzzleSolvingActivity extends Activity {
 
+    //TODO: Need to generate a winning arrangement, needs to be dynamic because of varying puzzle sizes
+    //      - Then after every piece movement the current state of the board needs to be checked against
+    //          the winning condition
+    //      - Tiles intended positions could be found out from their filenames??
+
+    //The max score the puzzle can have
+    private int MAX_SCORE = 100000;
+
     //Layout's views
     private RelativeLayout mGridLayout;
     private LinearLayout mMainLayout;
@@ -44,6 +56,15 @@ public class PuzzleSolvingActivity extends Activity {
 
     //2D mapping the positions of the tiles
     ImageView[][] mGridElements;
+
+    String[][] mCurrentLayout;
+    String[][] mWinningLayout;
+
+    Puzzle mCurrentPuzzle;
+
+    //Scoring
+    int mNumberOfMoves = 0;
+    long mStartTime;
 
     private float tileWidth = 0;
 
@@ -84,6 +105,10 @@ public class PuzzleSolvingActivity extends Activity {
         });
     }
 
+    private void ResetActivity() {
+        this.recreate();
+    }
+
     /**
      * Run when the selected index on the puzzle spinner is changed
      *
@@ -98,15 +123,20 @@ public class PuzzleSolvingActivity extends Activity {
         TextView textView = (TextView) view;
         String textViewContent = textView.getText().toString();
 
-        if (!textViewContent.equals(Spinner_Nothing_Selected)){
+        mGridLayout.removeAllViews();
+
+        if (!textViewContent.equals(Spinner_Nothing_Selected)) {
             String puzzleName = textViewContent;
 
             //Loads the puzzle
-            Puzzle puzzle = new Puzzle(this, puzzleName);
+            mCurrentPuzzle = new Puzzle(this, puzzleName);
+
+            int puzzleSizeX = mCurrentPuzzle.getPuzzleSizeX();
+            int puzzleSizeY = mCurrentPuzzle.getPuzzleSizeY();
 
             //Puts the image into a linear list
             List<Bitmap> imageList = new ArrayList<>();
-            for (Row row : puzzle.getPuzzlesImages()) {
+            for (Row row : mCurrentPuzzle.getPuzzlesImages()) {
                 //Gets a list of the images
                 List<Bitmap> images = row.getElements();
 
@@ -115,10 +145,25 @@ public class PuzzleSolvingActivity extends Activity {
                 }
             }
 
-            //Increments the number of times played
-            puzzle.UpdateTimesPlayed(this);
+            //Axis are flipped so it's easier to visual when debugging
+            mCurrentLayout = new String[puzzleSizeY][puzzleSizeX];
+            List<Row> layout = mCurrentPuzzle.getInitialPositions();
 
-            generateGrid(puzzle.getPuzzleSizeX(), puzzle.getPuzzleSizeY(), imageList);
+            for (int y = 0; y < layout.size(); y++) {
+                Row row = layout.get(y);
+                for (int x = 0; x < row.getElements().size(); x++) {
+                    mCurrentLayout[y][x] = (String) row.getElements().get(x);
+                }
+            }
+
+            //Increments the number of times played
+            mCurrentPuzzle.UpdateTimesPlayed(this);
+
+            generateGrid(puzzleSizeX, puzzleSizeY, imageList);
+
+            //Reset of scoring
+            mStartTime = System.nanoTime();
+            mNumberOfMoves = 0;
         }
     }
 
@@ -196,10 +241,11 @@ public class PuzzleSolvingActivity extends Activity {
      * @param images - Image list
      */
     private void generateGrid(int sizeX, int sizeY, List<Bitmap> images) {
-        //Re-sizes the grids height
 
+        generateWinningLayout(sizeX, sizeY);
+
+        //Re-sizes the grids height
         mGridElements = new ImageView[sizeY][sizeX];
-        mGridLayout.removeAllViews();
 
         //Grabs the dimensions of each grid
         int stepSize = (int) (tileWidth / sizeX);
@@ -243,6 +289,88 @@ public class PuzzleSolvingActivity extends Activity {
         mGridLayout.invalidate();
     }
 
+    /**
+     * TODO
+     *
+     * @param sizeX
+     * @param sizeY
+     */
+    private void generateWinningLayout(int sizeX, int sizeY) {
+
+        mWinningLayout = new String[sizeY][sizeX];
+        for (int y = 0; y < sizeY; y++) {
+            for (int x = 0; x < sizeX; x++) {
+                mWinningLayout[y][x] = String.valueOf(x + 1) + String.valueOf(y + 1);
+            }
+        }
+        //Top left is always empty
+        mWinningLayout[0][0] = "empty";
+    }
+
+    /**
+     * TODO
+     */
+    private void puzzleComplete() {
+        long elapsedTime = (System.nanoTime() - mStartTime);
+
+        double seccondsPassed = TimeUnit.MILLISECONDS.convert(elapsedTime, TimeUnit.NANOSECONDS) / 1000f;
+
+        //Updates the times completed
+        mCurrentPuzzle.UpdateTimesCompleted(this);
+
+        double score = calculateScore(seccondsPassed, mNumberOfMoves);
+        score = Math.round(score);
+
+        int previous_highscore = Integer.parseInt(mCurrentPuzzle.getHighscore(this));
+        mCurrentPuzzle.UpdateHighscore(this, (int) score);
+
+        AlertDialog.Builder alert = new AlertDialog.Builder(this);
+
+        alert.setTitle(R.string.puzzleWin_Title);
+
+        //Menu items
+        String highScoreString = getString(R.string.puzzleWin_Score) + score;
+        String timeString = String.format(getString(R.string.puzzleWin_TimeTaken), seccondsPassed);
+        String moveString = String.format(getString(R.string.puzzleWin_MovesTaken), String.valueOf(mNumberOfMoves));
+
+        String[] scoreArray = new String[]{
+                highScoreString,
+                timeString,
+                moveString};
+
+        alert.setOnDismissListener(new DialogInterface.OnDismissListener() {
+            @Override
+            public void onDismiss(DialogInterface dialogInterface) {
+                ResetActivity();
+            }
+        });
+        alert.setOnCancelListener(new DialogInterface.OnCancelListener() {
+            @Override
+            public void onCancel(DialogInterface dialogInterface) {
+                ResetActivity();
+            }
+        });
+
+        alert.setItems(scoreArray, null).show();
+    }
+
+    /**
+     * TODO:
+     *
+     * @return
+     */
+    private double calculateScore(double pTimeTaken, int pMovesPerformed) {
+        //A percentage reduction of the score
+        int deduction = MAX_SCORE / 1000;
+        double score = MAX_SCORE - ((pTimeTaken * deduction) + (pMovesPerformed * deduction));
+
+        //Check to make sure you can't have a negative score
+        if (score < 0) {
+            score = 0;
+        }
+
+        return score;
+    }
 
     //------------------- Tile Movement Code -------------------------- //
 
@@ -367,6 +495,7 @@ public class PuzzleSolvingActivity extends Activity {
              */
             private void MoveTile(int pDirectionID, View pTile) {
 
+
                 //Saves the view in this instance of this method for the
                 // OnAnimationEnd to reference
                 final View tile = pTile;
@@ -376,16 +505,17 @@ public class PuzzleSolvingActivity extends Activity {
 
                 //If the blank spot is to the left of the current position
                 if (checkIfValidMove(destinationPosition)) {
+
+                    mNumberOfMoves++;
+
                     mDeltaX = (destinationPosition.x - currentPosition.x) * mTileSize;
                     mDeltaY = (destinationPosition.y - currentPosition.y) * mTileSize;
-
 
                     TranslateAnimation animation =
                             new TranslateAnimation(0, mDeltaX, 0, mDeltaY);
 
                     animation.setDuration(SLIDE_SPEED);
                     animation.setRepeatCount(0);
-
 
                     //Sets what happens when the animation ends
                     animation.setAnimationListener(new Animation.AnimationListener() {
@@ -406,6 +536,7 @@ public class PuzzleSolvingActivity extends Activity {
                             //Clears the animation
                             tile.startAnimation(new TranslateAnimation(0f, 0f, 0f, 0f));
 
+
                         }
 
                         @Override
@@ -418,6 +549,11 @@ public class PuzzleSolvingActivity extends Activity {
                     mTileCurrentlyMoving = true;
                     pTile.startAnimation(animation);
                     moveOperation(currentPosition, destinationPosition);
+
+                    //Sees if the puzzle has been completed
+                    if (checkForWin()) {
+                        puzzleComplete();
+                    }
                 }
             }
 
@@ -471,14 +607,30 @@ public class PuzzleSolvingActivity extends Activity {
             }
 
             /**
+             * TODO
+             */
+            private Boolean checkForWin() {
+                return Arrays.deepEquals(mCurrentLayout, mWinningLayout);
+            }
+
+            /**
              * Method that updates the 2D array with the new positions
              * @param pCurrentPosition - The position of the tile being moved
              * @param pDestinationPosition - The position the tile is moving to
              */
             private void moveOperation(Position pCurrentPosition, Position pDestinationPosition) {
-                mGridElements[pDestinationPosition.y][pDestinationPosition.x]
-                        = mGridElements[pCurrentPosition.y][pCurrentPosition.x];
-                mGridElements[pCurrentPosition.y][pCurrentPosition.x] = null;
+
+                int Dx = pDestinationPosition.x;
+                int Dy = pDestinationPosition.y;
+
+                int Cx = pCurrentPosition.x;
+                int Cy = pCurrentPosition.y;
+
+                mGridElements[Dy][Dx] = mGridElements[Cy][Cx];
+                mGridElements[Cy][Cx] = null;
+
+                mCurrentLayout[Dy][Dx] = mCurrentLayout[Cy][Cx];
+                mCurrentLayout[Cy][Cx] = "empty";
             }
 
             @Override

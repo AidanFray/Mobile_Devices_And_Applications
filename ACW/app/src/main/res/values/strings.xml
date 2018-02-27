@@ -27,4 +27,8 @@
 
     <string name="filter_menu_ShowDownloaded">Show Downloaded</string>
     <string name="filter_menu_Clear"><b><i>Clear Filter</i></b></string>
+    <string name="puzzleWin_TimeTaken">Time taken: %.2f seconds</string>
+    <string name="puzzleWin_MovesTaken">Moves taken: %s</string>
+    <string name="puzzleWin_Title">Puzzle Complete!</string>
+    <string name="puzzleWin_Score">Score:</string>
 </resources>
