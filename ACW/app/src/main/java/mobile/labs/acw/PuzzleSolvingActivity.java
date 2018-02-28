@@ -138,8 +138,7 @@ public class PuzzleSolvingActivity extends FragmentActivity
         //Adds the values to the spinner
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(
                 this,
-                android.R.layout.simple_spinner_item,
-                android.R.id.text1,
+                R.layout.custom_spinner_textview,
                 downloadedPuzzles);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         mPuzzleSpinner.setAdapter(adapter);

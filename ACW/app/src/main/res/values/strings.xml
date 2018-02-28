@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">ACW</string>
+    <string name="app_name">Tile Puzzle ACW</string>
     <string name="blank_TextView">Blank TextView String</string>
     <string name="highscore_blank_value">Highscore: 0</string>
     <string name="downloading_text_TextView"><b>Downloading...</b></string>
@@ -25,8 +25,14 @@
     <string name="jsonArrayIndexName">PuzzleIndex</string>
     <string name="initialPositionsFileName">initial_positions.dat</string>
 
-    <string name="filter_menu_ShowDownloaded">Show Downloaded</string>
-    <string name="filter_menu_Clear"><b><i>Clear Filter</i></b></string>
+    <!-- Filter Menu options-->
+    <string name="filter_menu_title">Please pick a filter</string>
+    <string name="filter_menu_ShowDownloaded">Show downloaded</string>
+    <string name="filter_menu_ShowNotDownloaded">Show un-downloaded</string>
+    <string name="filter_menu_Clear"><b><i>CLEAR FILTER</i></b></string>
+    <string name="filter_menu_puzzleDimen_sub_menu"><b>Puzzle Dimensions:</b></string>
+    <string name="filter_menu_NeverPlayed">Show never played</string>
+    <string name="filter_menu_puzzle_size">Puzzles: </string>
 
     <!-- Score complete texts-->
     <string name="puzzleWin_Title"><b>Puzzle Complete!</b></string>
@@ -34,6 +40,8 @@
     <string name="puzzleWin_MovesTaken">Moves: %s</string>
     <string name="puzzleWin_Score">Score: %s</string>
 
-    <string name="NoPuzzleSelected">Please select a puzzle</string>
+    <string name="NoPuzzleSelected"><b><i>Please select a puzzle</i></b></string>
     <string name="downloadView_Highscore_TextView">Highscore: %s</string>
+
+
 </resources>

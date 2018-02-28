@@ -24,11 +24,4 @@
         android:text="@string/puzzle_download_menu_text"
         android:onClick="puzzleDownload_Button_OnClick"/>
 
-    <Button
-        android:id="@+id/highscore_button"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/highscore_menu_text"
-        android:onClick="highscore_Button_OnClick"/>
-
 </LinearLayout>

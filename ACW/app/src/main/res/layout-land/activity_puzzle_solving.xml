@@ -5,12 +5,43 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="mobile.labs.acw.PuzzleSolvingActivity"
-    android:orientation="horizontal">
+    android:orientation="horizontal"
+    android:background="@color/colorPrimary">
 
-    <android.support.v4.widget.Space
+    <LinearLayout
         android:layout_width="0dp"
         android:layout_height="match_parent"
-        android:layout_weight="1" />
+        android:layout_weight="1"
+        android:orientation="vertical"
+        android:layout_margin="@dimen/gridCustomBorder">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="Time: 0:43:04"
+            android:layout_margin="10dp"
+            android:background="@drawable/custom_border"
+            android:textSize="@dimen/puzzle_activity_textsize_land"
+            android:textColor="@color/colorAccent" />
+
+        <android.support.v4.widget.Space
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:layout_margin="10dp"
+            android:text="Score: 21323"
+            android:background="@drawable/custom_border"
+            android:textColor="@color/colorAccent"
+            android:textSize="@dimen/puzzle_activity_textsize_land" />
+    </LinearLayout>
 
     <RelativeLayout
         android:id="@+id/gridLayout"

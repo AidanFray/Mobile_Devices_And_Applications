@@ -33,8 +33,5 @@ public class MainActivity extends AppCompatActivity {
         Intent intent = new Intent(pView.getContext(), PuzzleSolvingActivity.class);
         startActivity(intent);
     }
-    public void highscore_Button_OnClick(View pView) {
-        //TODO: add intent code
-    }
 }
 

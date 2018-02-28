@@ -3,7 +3,7 @@
     android:id="@+id/gridLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_margin="20dp"
+    android:layout_margin="@dimen/gridCustomBorder"
     android:layout_gravity="center"
     android:background="@drawable/custom_border"
     tools:context="mobile.labs.acw.PuzzleGridFragment" />

@@ -38,6 +38,8 @@ public class PuzzleDownloadView extends LinearLayout implements View.OnClickList
     private TextView mPuzzleDescription;
     private TextView mPuzzleHighscore;
 
+    private Puzzle mPuzzle;
+
     private Boolean mDownloadBool;
     public Boolean getDownloadBool() {return mDownloadBool;}
 
@@ -184,6 +186,29 @@ public class PuzzleDownloadView extends LinearLayout implements View.OnClickList
      */
     public void setPuzzleDescription(String pDescription) {
         mPuzzleDescription.setText(pDescription);
+    }
+
+    /**
+     * Returns the name of the puzzle
+     */
+    public String getPuzzleDescription() {
+        return (String) mPuzzleDescription.getText();
+    }
+
+    /**
+     * Sets the puzzle object that the view is based off
+     *
+     * @param pPuzzle - Puzzle object
+     */
+    public void setPuzzle(Puzzle pPuzzle) {
+        mPuzzle = pPuzzle;
+    }
+
+    /**
+     * Gets the puzzle object that the view is based on
+     */
+    public Puzzle getPuzzle() {
+        return mPuzzle;
     }
 
     /**
