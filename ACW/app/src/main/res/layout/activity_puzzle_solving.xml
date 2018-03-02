@@ -13,38 +13,44 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-        <RelativeLayout
-            android:id="@+id/gridLayout"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="3" />
+
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
             android:orientation="vertical"
-            android:background="@drawable/custom_border"
-            android:layout_margin="@dimen/gridCustomBorder">
+            android:layout_margin="@dimen/gridCustomBorder"
+            android:background="@drawable/custom_border">
 
             <TextView
+                android:id="@+id/time_TextView"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:layout_weight="1"
                 android:gravity="center"
-                android:text="Time: 00:00:00"
+                android:text="@string/scoring_time"
                 android:textSize="@dimen/puzzle_activity_textsize"
+                android:layout_margin="5dp"
                 android:textColor="@color/colorText" />
 
             <TextView
+                android:id="@+id/score_TextView"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:layout_weight="1"
                 android:gravity="center"
-                android:text="Score: 0"
+                android:text="@string/scoring_score"
+                android:layout_margin="5dp"
                 android:textColor="@color/colorText"
                 android:textSize="@dimen/puzzle_activity_textsize" />
         </LinearLayout>
+
+        <RelativeLayout
+            android:id="@+id/gridLayout"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="3.5" />
 
         <Spinner
             android:id="@+id/puzzleSpinner"
@@ -52,7 +58,7 @@
             android:layout_height="0dp"
             android:layout_weight="1"
             android:layout_margin="20dp"
-            android:background="@color/colorPrimaryDark" />
+            android:background="@drawable/custom_border" />
 
     </LinearLayout>
 </RelativeLayout>

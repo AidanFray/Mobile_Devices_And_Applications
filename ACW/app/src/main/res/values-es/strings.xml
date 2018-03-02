@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Rompecabezas</string>
+    <string name="blank_TextView">Blanco TextView</string>
+    <string name="NoPuzzleSelected"><b><i> Por favor,  selecconie un rompecabezas </i></b></string>
+    <string name="filter_menu_NeverPlayed">Monstrar nunca de jugado</string>
+    <string name="downloading_text_TextView">Monstrar descargado</string>
+    <string name="filter_menu_Clear">Filtro claro</string>
+</resources>

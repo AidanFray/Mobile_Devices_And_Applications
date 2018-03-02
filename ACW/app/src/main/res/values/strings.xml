@@ -14,16 +14,16 @@
     <string name="puzzleDownloadState_Description">ImageView that shows if the puzzle has been downloaded</string>
 
     <!-- Literal string for addresses and file paths  -->
-    <string name="baseURL">http://www.simongrey.net/08027/slidingPuzzleAcw/</string>
-    <string name="puzzleInfoUrl">puzzles/</string>
-    <string name="puzzleLayoutUrl">layouts/</string>
-    <string name="puzzleImageUrl">images/</string>
-    <string name="puzzleIndexFileName">index.json</string>
-    <string name="puzzleIndexDir">Index</string>
-    <string name="puzzleIndexLocalName">index.dat</string>
-    <string name="puzzleSharedPreferencesID">Puzzles</string>
-    <string name="jsonArrayIndexName">PuzzleIndex</string>
-    <string name="initialPositionsFileName">initial_positions.dat</string>
+    <string name="baseURL" translatable="false">http://www.simongrey.net/08027/slidingPuzzleAcw/</string>
+    <string name="puzzleInfoUrl" translatable="false">puzzles/</string>
+    <string name="puzzleLayoutUrl" translatable="false">layouts/</string>
+    <string name="puzzleImageUrl" translatable="false">images/</string>
+    <string name="puzzleIndexFileName" translatable="false">index.json</string>
+    <string name="puzzleIndexDir" translatable="false">Index</string>
+    <string name="puzzleIndexLocalName" translatable="false">index.dat</string>
+    <string name="puzzleSharedPreferencesID" translatable="false">Puzzles</string>
+    <string name="jsonArrayIndexName" translatable="false">PuzzleIndex</string>
+    <string name="initialPositionsFileName" translatable="false">initial_positions.dat</string>
 
     <!-- Filter Menu options-->
     <string name="filter_menu_title">Please pick a filter</string>
@@ -42,6 +42,10 @@
 
     <string name="NoPuzzleSelected"><b><i>Please select a puzzle</i></b></string>
     <string name="downloadView_Highscore_TextView">Highscore: %s</string>
+
+
+    <string name="scoring_time">Time: %.3f</string>
+    <string name="scoring_score">Score: %s</string>
 
 
 </resources>

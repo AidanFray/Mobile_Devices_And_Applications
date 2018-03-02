@@ -1,14 +1,22 @@
 package mobile.labs.acw;
 
+import android.annotation.TargetApi;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
+import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import android.support.annotation.RequiresApi;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import org.json.JSONArray;
@@ -17,8 +25,13 @@ import org.json.JSONObject;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
+import mobile.labs.acw.ExceptionHandling.Logging;
 import mobile.labs.acw.JSON.JSON;
+
+//TODO: Time update needs to be paused when phone call is taken
+//TODO: Time update needs stopping when the activity is destroyed
 
 /**
  * Activity that contains the grid of images and where the game will actually be played.
@@ -30,14 +43,24 @@ public class PuzzleSolvingActivity extends FragmentActivity
 
     private final String FRAGMENT_TAG = getClass().getSimpleName();
 
+    private int TIME_REFRESH_PERIOD = 100; //ms
+    private Thread mCurrentTimeUpdateThread;
+    private long mStartTime;
+
     //Layout's views
     private Spinner mPuzzleSpinner;
     private PuzzleGridFragment mGridFragment;
+    private TextView mTimeTextView;
+    private TextView mScoreTextView;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_puzzle_solving);
+
+        mTimeTextView = (TextView) findViewById(R.id.time_TextView);
+        mScoreTextView = (TextView) findViewById(R.id.score_TextView);
 
         mPuzzleSpinner = (Spinner) findViewById(R.id.puzzleSpinner);
         mPuzzleSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -84,6 +107,8 @@ public class PuzzleSolvingActivity extends FragmentActivity
     private void onPuzzleSelection(AdapterView<?> adapterView, View view, int i, long l) {
 
         if (view != null) {
+            mStartTime = System.nanoTime();
+            startTimeUpdate();
             mGridFragment.onPuzzleSelection(view);
         }
     }
@@ -136,11 +161,25 @@ public class PuzzleSolvingActivity extends FragmentActivity
         }
 
         //Adds the values to the spinner
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(
-                this,
-                R.layout.custom_spinner_textview,
-                downloadedPuzzles);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, R.layout.custom_spinner_textview, downloadedPuzzles) {
+
+            @Override
+            public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
+                View v = super.getView(position, convertView, parent);
+                return v;
+            }
+
+            //TODO: Issues with API??
+            @Override
+            public View getDropDownView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
+                View v = super.getDropDownView(position, convertView, parent);
+                v.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
+                v.setBackgroundColor(Color.BLACK);
+                ((TextView) v).setTextColor(Color.WHITE);
+                return v;
+            }
+        };
+        adapter.setDropDownViewResource(android.R.layout.simple_list_item_1);
         mPuzzleSpinner.setAdapter(adapter);
     }
 
@@ -165,6 +204,62 @@ public class PuzzleSolvingActivity extends FragmentActivity
         finish();
         startActivity(intent);
         finish();
+    }
+
+
+    /**
+     * TODO
+     */
+    private void startTimeUpdate() {
+
+        //Stops the previous thread
+        if (mCurrentTimeUpdateThread != null) {
+            mCurrentTimeUpdateThread.interrupt();
+        }
+
+        Thread t = new Thread() {
+            @Override
+            public void run() {
+
+                try {
+                    while (!isInterrupted()) {
+                        Thread.sleep(TIME_REFRESH_PERIOD);
+
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                updateTime();
+                            }
+                        });
+
+                    }
+                } catch (InterruptedException e) {
+                    Logging.Exception(e);
+                }
+            }
+        };
+        mCurrentTimeUpdateThread = t;
+        t.start();
+    }
+
+    /**
+     * TODO
+     */
+    private void updateTime() {
+        long elapsedTime = (System.nanoTime() - mStartTime);
+        float seccondsPassed = TimeUnit.MILLISECONDS.convert(elapsedTime, TimeUnit.NANOSECONDS) / 1000f;
+
+        //Sets the value of the TextView dynamically
+        String value = String.format(getString(R.string.scoring_time), seccondsPassed);
+
+        mTimeTextView.setText(value);
+    }
+
+    /**
+     * TODO
+     */
+    private void updateScore() {
+
     }
 
     @Override

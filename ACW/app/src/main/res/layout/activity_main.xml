@@ -8,20 +8,44 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context="mobile.labs.acw.MainActivity">
+    tools:context="mobile.labs.acw.MainActivity"
+    android:background="@color/colorPrimary">
+
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="2"
+        android:layout_margin="20dp"
+        android:contentDescription=""
+        android:src="@mipmap/ic_launcher" />
+
+    <Space
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1" />
 
     <Button
+        style="@style/Widget.AppCompat.Button.Colored"
         android:id="@+id/puzzle_solve_button"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:layout_margin="20dp"
+        android:textSize="20sp"
         android:text="@string/puzzle_solving_button_text"
-        android:onClick="puzzleSolve_Button_OnClick"/>
+        android:onClick="puzzleSolve_Button_OnClick"
+        android:textColor="@color/colorText" />
 
     <Button
+        style="@style/Widget.AppCompat.Button.Colored"
         android:id="@+id/puzzle_download_button"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:textSize="20sp"
+        android:layout_margin="20dp"
         android:text="@string/puzzle_download_menu_text"
-        android:onClick="puzzleDownload_Button_OnClick"/>
+        android:onClick="puzzleDownload_Button_OnClick"
+        android:textColor="@color/colorText" />
 
 </LinearLayout>

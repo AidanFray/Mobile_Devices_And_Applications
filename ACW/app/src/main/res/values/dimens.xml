@@ -9,8 +9,8 @@
 
     <dimen name="puzzleDownload_height">50dp</dimen>
 
-    <dimen name="gridCustomBorder">10dp</dimen>
-    <dimen name="gridCustomBorderLineThickness">10dp</dimen>
+    <dimen name="gridCustomBorder">5dp</dimen>
+    <dimen name="gridCustomBorderLineThickness">5dp</dimen>
     <dimen name="puzzle_activity_textsize">25sp</dimen>
     <dimen name="puzzle_activity_textsize_land">15sp</dimen>
 
