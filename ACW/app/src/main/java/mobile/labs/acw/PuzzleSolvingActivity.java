@@ -43,16 +43,11 @@ public class PuzzleSolvingActivity extends FragmentActivity
 
     private final String FRAGMENT_TAG = getClass().getSimpleName();
 
-    private int TIME_REFRESH_PERIOD = 100; //ms
-    private Thread mCurrentTimeUpdateThread;
-    private long mStartTime;
-
     //Layout's views
     private Spinner mPuzzleSpinner;
     private PuzzleGridFragment mGridFragment;
     private TextView mTimeTextView;
     private TextView mScoreTextView;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -107,8 +102,6 @@ public class PuzzleSolvingActivity extends FragmentActivity
     private void onPuzzleSelection(AdapterView<?> adapterView, View view, int i, long l) {
 
         if (view != null) {
-            mStartTime = System.nanoTime();
-            startTimeUpdate();
             mGridFragment.onPuzzleSelection(view);
         }
     }
@@ -206,64 +199,28 @@ public class PuzzleSolvingActivity extends FragmentActivity
         finish();
     }
 
-
-    /**
-     * TODO
-     */
-    private void startTimeUpdate() {
-
-        //Stops the previous thread
-        if (mCurrentTimeUpdateThread != null) {
-            mCurrentTimeUpdateThread.interrupt();
-        }
-
-        Thread t = new Thread() {
-            @Override
-            public void run() {
-
-                try {
-                    while (!isInterrupted()) {
-                        Thread.sleep(TIME_REFRESH_PERIOD);
-
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                updateTime();
-                            }
-                        });
-
-                    }
-                } catch (InterruptedException e) {
-                    Logging.Exception(e);
-                }
-            }
-        };
-        mCurrentTimeUpdateThread = t;
-        t.start();
-    }
-
-    /**
-     * TODO
-     */
-    private void updateTime() {
-        long elapsedTime = (System.nanoTime() - mStartTime);
-        float seccondsPassed = TimeUnit.MILLISECONDS.convert(elapsedTime, TimeUnit.NANOSECONDS) / 1000f;
-
-        //Sets the value of the TextView dynamically
-        String value = String.format(getString(R.string.scoring_time), seccondsPassed);
-
-        mTimeTextView.setText(value);
-    }
-
-    /**
-     * TODO
-     */
-    private void updateScore() {
-
+    // ## Fragment methods
+    @Override
+    public void ResetPuzzle() {
+        resetActivity();
     }
 
     @Override
-    public void onFragmentInteraction() {
-        resetActivity();
+    public void UpdateTime(double pTimeValue) {
+        String value = String.format(getString(R.string.scoring_time), pTimeValue);
+        mTimeTextView.setText(value);
     }
+
+    @Override
+    public void UpdateScore(double pScoreValue) {
+        mScoreTextView.setText(
+                String.format(getString(R.string.scoring_score), pScoreValue));
+    }
+
+    @Override
+    public void ResetTimeAndScore() {
+        mTimeTextView.setText(String.format(getString(R.string.scoring_time), 0.0));
+        mScoreTextView.setText(String.format(getString(R.string.scoring_score), 0.0));
+    }
+
 }

@@ -36,7 +36,7 @@
 
     <!-- Score complete texts-->
     <string name="puzzleWin_Title"><b>Puzzle Complete!</b></string>
-    <string name="puzzleWin_TimeTaken">Time: %.2f seconds</string>
+    <string name="puzzleWin_TimeTaken">Time: %.4f seconds</string>
     <string name="puzzleWin_MovesTaken">Moves: %s</string>
     <string name="puzzleWin_Score">Score: %s</string>
 
@@ -44,8 +44,8 @@
     <string name="downloadView_Highscore_TextView">Highscore: %s</string>
 
 
-    <string name="scoring_time">Time: %.3f</string>
-    <string name="scoring_score">Score: %s</string>
+    <string name="scoring_time">Time: %.1f seconds</string>
+    <string name="scoring_score">Score: %.0f points</string>
 
 
 </resources>

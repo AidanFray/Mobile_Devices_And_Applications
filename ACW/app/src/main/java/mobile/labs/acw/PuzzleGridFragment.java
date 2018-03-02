@@ -22,6 +22,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import mobile.labs.acw.ExceptionHandling.Logging;
 import mobile.labs.acw.Puzzle_Class.Puzzle;
 import mobile.labs.acw.Puzzle_Class.Row;
 
@@ -49,12 +50,25 @@ public class PuzzleGridFragment extends Fragment {
     //Scoring
     int mNumberOfMoves;
     long mStartTime;
+    double mPreviousTimeBeforePause;
 
     private static boolean mTileCurrentlyMoving = false;
 
+    //Time update
+    private int TIME_REFRESH_PERIOD = 100; //ms
+    private Thread mCurrentTimeUpdateThread;
+    boolean mTimeStarted = false;
+
     private OnFragmentInteractionListener mListener;
+
     public interface OnFragmentInteractionListener {
-        void onFragmentInteraction();
+        void ResetPuzzle();
+
+        void UpdateTime(double pValue);
+
+        void UpdateScore(double pValue);
+
+        void ResetTimeAndScore();
     }
 
     public PuzzleGridFragment() {
@@ -107,7 +121,10 @@ public class PuzzleGridFragment extends Fragment {
      * Resets the encasing Activity
      */
     private void Reset() {
-        mListener.onFragmentInteraction();
+        stopTimeUpdate();
+        mListener.ResetPuzzle();
+        mTileCurrentlyMoving = false;
+        mPreviousTimeBeforePause = 0;
     }
 
     /**
@@ -116,7 +133,7 @@ public class PuzzleGridFragment extends Fragment {
      * @param pView - The spinner view that was clicked
      */
     public void onPuzzleSelection(View pView) {
-        mTileCurrentlyMoving = false;
+        mListener.ResetTimeAndScore();
 
         TextView textView = (TextView) pView;
         String textViewContent = textView.getText().toString();
@@ -243,6 +260,7 @@ public class PuzzleGridFragment extends Fragment {
 
     /**
      * Generates the winning layout dynamically for a grid
+     *
      * @param sizeX - Size of the x side of the puzzle
      * @param sizeY - Size of the y side of the puzzle
      */
@@ -262,15 +280,18 @@ public class PuzzleGridFragment extends Fragment {
      * Runs when the winning conditions have been matched for the puzzle
      */
     private void puzzleComplete() {
-        long elapsedTime = (System.nanoTime() - mStartTime);
 
-        double seccondsPassed = TimeUnit.MILLISECONDS.convert(elapsedTime, TimeUnit.NANOSECONDS) / 1000f;
+        stopTimeUpdate();
+
+        double timeElasped = calculateTime();
+        double score = calculateScore(timeElasped, mNumberOfMoves);
+        score = Math.round(score);
+
+        mListener.UpdateTime(timeElasped);
+        mListener.UpdateScore(score);
 
         //Updates the times completed
         mCurrentPuzzle.UpdateTimesCompleted(getContext());
-
-        double score = calculateScore(seccondsPassed, mNumberOfMoves);
-        score = Math.round(score);
 
         int previous_highscore = Integer.parseInt(mCurrentPuzzle.getHighscore(getContext()));
         mCurrentPuzzle.UpdateHighscore(getContext(), (int) score);
@@ -281,7 +302,7 @@ public class PuzzleGridFragment extends Fragment {
 
         //Menu items
         String highScoreString = String.format(getString(R.string.puzzleWin_Score), String.valueOf(score));
-        String timeString = String.format(getString(R.string.puzzleWin_TimeTaken), seccondsPassed);
+        String timeString = String.format(getString(R.string.puzzleWin_TimeTaken), timeElasped);
         String moveString = String.format(getString(R.string.puzzleWin_MovesTaken), String.valueOf(mNumberOfMoves));
 
         String[] scoreArray = new String[]{
@@ -306,9 +327,61 @@ public class PuzzleGridFragment extends Fragment {
     }
 
     /**
+     * TODO
+     */
+    private void startTimeUpdate() {
+
+        //Stops the previous thread
+        if (mCurrentTimeUpdateThread != null) {
+            mCurrentTimeUpdateThread.interrupt();
+        }
+
+        Thread t = new Thread() {
+            @Override
+            public void run() {
+
+                try {
+                    while (!isInterrupted()) {
+                        Thread.sleep(TIME_REFRESH_PERIOD);
+
+                        if (getActivity() != null) {
+                            getActivity().runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    double time = calculateTime();
+
+                                    mListener.UpdateTime(time);
+                                    mListener.UpdateScore(calculateScore(time, mNumberOfMoves));
+                                }
+                            });
+                        }
+
+                    }
+                } catch (InterruptedException e) {
+                    Logging.Exception(e);
+                }
+            }
+        };
+        mCurrentTimeUpdateThread = t;
+        t.start();
+    }
+
+    /**
+     * TODO
+     */
+    private void stopTimeUpdate() {
+        if (mCurrentTimeUpdateThread != null) {
+            mCurrentTimeUpdateThread.interrupt();
+            mTimeStarted = false;
+            mListener.ResetTimeAndScore();
+        }
+    }
+
+    /**
      * Method that calculates the score for the puzzle. The score is calculated by taking
      * a small percentage of the MAX_SCORE after either a whole second has passed or a move has
      * been performed
+     *
      * @return - The calculated score
      */
     private double calculateScore(double pTimeTaken, int pMovesPerformed) {
@@ -322,6 +395,15 @@ public class PuzzleGridFragment extends Fragment {
         }
 
         return score;
+    }
+
+    /**
+     * TODO
+     */
+    private float calculateTime() {
+        long elapsedTime = (System.nanoTime() - mStartTime);
+        float seccondsPassed = TimeUnit.MILLISECONDS.convert(elapsedTime, TimeUnit.NANOSECONDS) / 1000f;
+        return seccondsPassed;
     }
 
     /**
@@ -445,6 +527,10 @@ public class PuzzleGridFragment extends Fragment {
              */
             private void MoveTile(int pDirectionID, View pTile) {
 
+                //Starts it when a tile moves
+                if (!mTimeStarted) {
+                    startTimeUpdate();
+                }
 
                 //Saves the view in this instance of this method for the
                 // OnAnimationEnd to reference
