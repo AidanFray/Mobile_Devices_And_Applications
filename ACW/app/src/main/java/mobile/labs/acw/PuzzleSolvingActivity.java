@@ -1,20 +1,22 @@
 package mobile.labs.acw;
 
-import android.annotation.TargetApi;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.annotation.RequiresApi;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v7.app.AppCompatDialog;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -25,13 +27,9 @@ import org.json.JSONObject;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
-import mobile.labs.acw.ExceptionHandling.Logging;
 import mobile.labs.acw.JSON.JSON;
-
-//TODO: Time update needs to be paused when phone call is taken
-//TODO: Time update needs stopping when the activity is destroyed
+import mobile.labs.acw.Utility.Screen;
 
 /**
  * Activity that contains the grid of images and where the game will actually be played.
@@ -79,7 +77,6 @@ public class PuzzleSolvingActivity extends FragmentActivity
             mGridFragment = (PuzzleGridFragment) getSupportFragmentManager().getFragment(savedInstanceState, FRAGMENT_TAG);
         }
 
-
         loadDownloadedPuzzles();
     }
 
@@ -89,6 +86,25 @@ public class PuzzleSolvingActivity extends FragmentActivity
 
         //Save the fragment's instance
         getSupportFragmentManager().putFragment(outState, FRAGMENT_TAG, mGridFragment);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+
+        if (mGridFragment != null && mGridFragment.mTimeStarted) {
+            mGridFragment.pauseTimeUpdate();
+            mGridFragment.mShowResumeMenu = true;
+        }
+    }
+
+    @Override
+    protected void onPostResume() {
+        super.onPostResume();
+
+        if (mGridFragment.mShowResumeMenu) {
+            showResumePopup();
+        }
     }
 
     /**
@@ -104,6 +120,11 @@ public class PuzzleSolvingActivity extends FragmentActivity
         if (view != null) {
             mGridFragment.onPuzzleSelection(view);
         }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
     }
 
     /**
@@ -199,6 +220,14 @@ public class PuzzleSolvingActivity extends FragmentActivity
         finish();
     }
 
+    /**
+     * This method shows the menu containing a single button that resumes the time counter
+     * and score incrementation
+     */
+    private void showResumePopup() {
+        new ResumeDialog(this).show();
+    }
+
     // ## Fragment methods
     @Override
     public void ResetPuzzle() {
@@ -223,4 +252,53 @@ public class PuzzleSolvingActivity extends FragmentActivity
         mScoreTextView.setText(String.format(getString(R.string.scoring_score), 0.0));
     }
 
+    class ResumeDialog extends AppCompatDialog {
+
+        Context mContext;
+        Button mResumeButton;
+
+        public ResumeDialog(Context context) {
+            super(context);
+
+            mContext = context;
+        }
+
+        @Override
+        protected void onCreate(Bundle savedInstanceState) {
+            super.onCreate(savedInstanceState);
+
+            setTitle("RESUME");
+
+            LayoutInflater layoutInflater = (LayoutInflater) getBaseContext().getSystemService(LAYOUT_INFLATER_SERVICE);
+            setContentView(layoutInflater.inflate(R.layout.resume_popup, null));
+
+            mResumeButton = (Button) this.findViewById(R.id.resume_button);
+
+            mResumeButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+
+                    if (mGridFragment != null) {
+                        mGridFragment.startScoreUpdate();
+                    }
+                    cancel();
+                }
+            });
+
+        }
+
+        @Override
+        public void show() {
+            super.show();
+
+            Window window = getWindow();
+            if (window == null) return;
+
+            float h = Screen.getHeight(PuzzleSolvingActivity.this);
+            float w = Screen.getHeight(PuzzleSolvingActivity.this);
+
+            window.setLayout((int) w / 2, (int) h / 2);
+        }
+
+    }
 }

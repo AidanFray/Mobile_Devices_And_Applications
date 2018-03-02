@@ -38,8 +38,7 @@ public class PuzzleGridFragment extends Fragment {
     String[][] mWinningLayout;
     Puzzle mCurrentPuzzle;
 
-    float tileWidth;
-
+    //Sizing
     float mPadding;
     int mTileSizeX;
     int mTileSizeY;
@@ -50,14 +49,16 @@ public class PuzzleGridFragment extends Fragment {
     //Scoring
     int mNumberOfMoves;
     long mStartTime;
-    double mPreviousTimeBeforePause;
-
-    private static boolean mTileCurrentlyMoving = false;
+    long mPreviousTimeBeforePause;
 
     //Time update
     private int TIME_REFRESH_PERIOD = 100; //ms
     private Thread mCurrentTimeUpdateThread;
-    boolean mTimeStarted = false;
+
+    //Flags
+    private static boolean mTileCurrentlyMoving = false;
+    public boolean mTimeStarted = false;
+    public boolean mShowResumeMenu = false;
 
     private OnFragmentInteractionListener mListener;
 
@@ -121,7 +122,7 @@ public class PuzzleGridFragment extends Fragment {
      * Resets the encasing Activity
      */
     private void Reset() {
-        stopTimeUpdate();
+        stopScoreUpdate();
         mListener.ResetPuzzle();
         mTileCurrentlyMoving = false;
         mPreviousTimeBeforePause = 0;
@@ -133,6 +134,7 @@ public class PuzzleGridFragment extends Fragment {
      * @param pView - The spinner view that was clicked
      */
     public void onPuzzleSelection(View pView) {
+        stopScoreUpdate();
         mListener.ResetTimeAndScore();
 
         TextView textView = (TextView) pView;
@@ -183,7 +185,7 @@ public class PuzzleGridFragment extends Fragment {
             generateGrid(puzzleSizeX, puzzleSizeY, mImages);
 
             //Reset of scoring
-            mStartTime = System.nanoTime();
+
             mNumberOfMoves = 0;
         } else {
             if (samePuzzle) {
@@ -281,7 +283,7 @@ public class PuzzleGridFragment extends Fragment {
      */
     private void puzzleComplete() {
 
-        stopTimeUpdate();
+        stopScoreUpdate();
 
         double timeElasped = calculateTime();
         double score = calculateScore(timeElasped, mNumberOfMoves);
@@ -327,14 +329,17 @@ public class PuzzleGridFragment extends Fragment {
     }
 
     /**
-     * TODO
+     * Starts the thread that updates the time elapsed and current score
      */
-    private void startTimeUpdate() {
+    public void startScoreUpdate() {
 
         //Stops the previous thread
         if (mCurrentTimeUpdateThread != null) {
             mCurrentTimeUpdateThread.interrupt();
         }
+
+        mTimeStarted = true;
+        mStartTime = System.nanoTime();
 
         Thread t = new Thread() {
             @Override
@@ -367,13 +372,26 @@ public class PuzzleGridFragment extends Fragment {
     }
 
     /**
-     * TODO
+     * Stops the score and update thread
      */
-    private void stopTimeUpdate() {
+    private void stopScoreUpdate() {
         if (mCurrentTimeUpdateThread != null) {
+            mTimeStarted = false;
+            mCurrentTimeUpdateThread.interrupt();
+            mListener.ResetTimeAndScore();
+        }
+    }
+
+    /**
+     * Pauses the score and time update thread without fully killing the thread
+     */
+    public void pauseTimeUpdate() {
+        if (mCurrentTimeUpdateThread != null) {
+
+            //Saves the previous value before the pause
+            mPreviousTimeBeforePause += (System.nanoTime() - mStartTime);
             mCurrentTimeUpdateThread.interrupt();
             mTimeStarted = false;
-            mListener.ResetTimeAndScore();
         }
     }
 
@@ -398,10 +416,10 @@ public class PuzzleGridFragment extends Fragment {
     }
 
     /**
-     * TODO
+     * Calculate the total elapsed time
      */
     private float calculateTime() {
-        long elapsedTime = (System.nanoTime() - mStartTime);
+        long elapsedTime = (System.nanoTime() - mStartTime) + mPreviousTimeBeforePause;
         float seccondsPassed = TimeUnit.MILLISECONDS.convert(elapsedTime, TimeUnit.NANOSECONDS) / 1000f;
         return seccondsPassed;
     }
@@ -529,7 +547,7 @@ public class PuzzleGridFragment extends Fragment {
 
                 //Starts it when a tile moves
                 if (!mTimeStarted) {
-                    startTimeUpdate();
+                    startScoreUpdate();
                 }
 
                 //Saves the view in this instance of this method for the
