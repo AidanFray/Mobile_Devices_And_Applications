@@ -50,6 +50,8 @@ public class PuzzleGridFragment extends Fragment {
     int mNumberOfMoves;
     long mStartTime;
     long mPreviousTimeBeforePause;
+    double mPreviousScore = 0; //TODO: Reset
+
 
     //Time update
     private int TIME_REFRESH_PERIOD = 100; //ms
@@ -59,6 +61,9 @@ public class PuzzleGridFragment extends Fragment {
     private static boolean mTileCurrentlyMoving = false;
     public boolean mTimeStarted = false;
     public boolean mShowResumeMenu = false;
+    public boolean mPaused = false;
+    public boolean mResumePopupShowing = false;
+
 
     private OnFragmentInteractionListener mListener;
 
@@ -124,9 +129,18 @@ public class PuzzleGridFragment extends Fragment {
     private void Reset() {
         stopScoreUpdate();
         mListener.ResetPuzzle();
+        ResetFlags();
+        mPreviousScore = 0;
+    }
+
+    /**
+     * TODO
+     */
+    private void ResetFlags() {
         mTileCurrentlyMoving = false;
         mPreviousTimeBeforePause = 0;
     }
+
 
     /**
      * Method called from the encasing Activity when a puzzle is selected from the spinner
@@ -150,6 +164,9 @@ public class PuzzleGridFragment extends Fragment {
         //Stops creating the view if it's the default menu or it was the same puzzle as before
         if (!textViewContent.equals(getString(R.string.NoPuzzleSelected)) &&
                 (!samePuzzle)) {
+
+            ResetFlags();
+
             String puzzleName = textViewContent;
 
             //Loads the puzzle
@@ -404,8 +421,16 @@ public class PuzzleGridFragment extends Fragment {
      */
     private double calculateScore(double pTimeTaken, int pMovesPerformed) {
         //A percentage reduction of the score
-        int deduction = MAX_SCORE / 500;
+
+        double deduction;
+        if (mPreviousScore == 0) {
+            deduction = MAX_SCORE / 1000;
+        } else {
+            deduction = mPreviousScore / 1000;
+        }
+
         double score = MAX_SCORE - ((pTimeTaken * deduction) + (pMovesPerformed * deduction));
+        mPreviousScore = score;
 
         //Check to make sure you can't have a negative score
         if (score < 0) {

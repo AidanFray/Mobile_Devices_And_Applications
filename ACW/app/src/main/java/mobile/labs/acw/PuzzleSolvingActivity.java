@@ -225,7 +225,13 @@ public class PuzzleSolvingActivity extends FragmentActivity
      * and score incrementation
      */
     private void showResumePopup() {
-        new ResumeDialog(this).show();
+
+        if (mGridFragment != null) {
+            if (!mGridFragment.mResumePopupShowing) {
+                mGridFragment.mResumePopupShowing = true;
+                new ResumeDialog(this).show();
+            }
+        }
     }
 
     // ## Fragment methods
@@ -264,6 +270,16 @@ public class PuzzleSolvingActivity extends FragmentActivity
         }
 
         @Override
+        protected void onStop() {
+            super.onStop();
+
+            if (mGridFragment != null) {
+                mGridFragment.startScoreUpdate();
+                mGridFragment.mResumePopupShowing = false;
+            }
+        }
+
+        @Override
         protected void onCreate(Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
 
@@ -277,10 +293,7 @@ public class PuzzleSolvingActivity extends FragmentActivity
             mResumeButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-
-                    if (mGridFragment != null) {
-                        mGridFragment.startScoreUpdate();
-                    }
+                    //Calls the onStop();
                     cancel();
                 }
             });
@@ -295,9 +308,19 @@ public class PuzzleSolvingActivity extends FragmentActivity
             if (window == null) return;
 
             float h = Screen.getHeight(PuzzleSolvingActivity.this);
-            float w = Screen.getHeight(PuzzleSolvingActivity.this);
+            float w = Screen.getWidth(PuzzleSolvingActivity.this);
 
-            window.setLayout((int) w / 2, (int) h / 2);
+            float side;
+            //Portrait
+            if (w < h) {
+                side = w;
+            }
+            // Landscape
+            else {
+                side = h;
+            }
+
+            window.setLayout((int) (side / 2), (int) (side / 2));
         }
 
     }
