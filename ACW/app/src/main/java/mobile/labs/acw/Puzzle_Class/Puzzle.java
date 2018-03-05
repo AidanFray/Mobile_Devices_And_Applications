@@ -135,8 +135,6 @@ public class Puzzle {
             canvas.drawLine(max_size, 0, max_size, max_size, paint);        //Right line
             canvas.drawLine(0, max_size, max_size, max_size, paint);        //Bottom Line
 
-            System.gc();
-
             return cs;
         } catch (Exception e) {
             Logging.Exception(e);
@@ -381,7 +379,7 @@ public class Puzzle {
     /**
      * The general private method that is used to increment a value in a database
      * @param pContext - This provided context
-     * @param pColumnIndex - The index value to be incremented
+     * @param pColumnName - The index value to be incremented
      */
     private void IncrementDatabaseCell(Context pContext, String pColumnName) {
         Database db = new Database(pContext);

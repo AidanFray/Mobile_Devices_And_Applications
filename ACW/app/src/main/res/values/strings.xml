@@ -44,6 +44,8 @@
     <string name="downloadView_Highscore_TextView">Highscore: %s</string>
 
 
+    <string name="scoring_time_blank">Time: 0.0 seconds</string>
+    <string name="scoring_score_blank">Score: 0 points</string>
     <string name="scoring_time">Time: %.1f seconds</string>
     <string name="scoring_score">Score: %.0f points</string>
 

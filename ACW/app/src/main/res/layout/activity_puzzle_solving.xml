@@ -29,7 +29,7 @@
                 android:layout_height="0dp"
                 android:layout_weight="1"
                 android:gravity="center"
-                android:text="@string/scoring_time"
+                android:text="@string/scoring_time_blank"
                 android:textSize="@dimen/puzzle_activity_textsize"
                 android:layout_margin="5dp"
                 android:textColor="@color/colorText" />
@@ -40,7 +40,7 @@
                 android:layout_height="0dp"
                 android:layout_weight="1"
                 android:gravity="center"
-                android:text="@string/scoring_score"
+                android:text="@string/scoring_score_blank"
                 android:layout_margin="5dp"
                 android:textColor="@color/colorText"
                 android:textSize="@dimen/puzzle_activity_textsize" />

@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -183,11 +184,12 @@ public class PuzzleSolvingActivity extends FragmentActivity
                 return v;
             }
 
-            //TODO: Issues with API??
             @Override
             public View getDropDownView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
                 View v = super.getDropDownView(position, convertView, parent);
-                v.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+                    v.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
+                }
                 v.setBackgroundColor(Color.BLACK);
                 ((TextView) v).setTextColor(Color.WHITE);
                 return v;

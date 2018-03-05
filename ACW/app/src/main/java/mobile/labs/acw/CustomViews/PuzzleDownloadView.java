@@ -112,8 +112,11 @@ public class PuzzleDownloadView extends LinearLayout implements View.OnClickList
         //Loads in the thumbnail once
         if (mBlankThumbnail == null) {
 
-            //TODO: Would it be more effcient to create a blank canvas with a border??
-            mBlankThumbnail = BitmapFactory.decodeResource(getResources(), R.drawable.blank_puzzle);
+            // Resizes the bitmap
+            BitmapFactory.Options bitmapOptions = new BitmapFactory.Options();
+            bitmapOptions.inSampleSize = 10;
+
+            mBlankThumbnail = BitmapFactory.decodeResource(getResources(), R.drawable.blank_puzzle, bitmapOptions);
         }
 
         try {

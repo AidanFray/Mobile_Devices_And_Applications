@@ -20,8 +20,10 @@ public class Database {
      * @param pValues - The list of values to be saved
      */
     public void SaveToDatabase(String pPrivateKey, String[] pValues) {
+
+        SQLiteDatabase database = null;
         try {
-            SQLiteDatabase database = new DatabaseHelper(mContext).getWritableDatabase();
+            database = new DatabaseHelper(mContext).getWritableDatabase();
             ContentValues values = new ContentValues();
 
             //Adds the private key
@@ -33,9 +35,11 @@ public class Database {
             }
 
             database.insert(DBContract.Puzzle.TABLE_NAME, null, values);
+            database.close();
         } catch (Exception e) {
             Logging.Exception(e);
         }
+        Close(database);
     }
 
     /**
@@ -53,6 +57,7 @@ public class Database {
                 pPuzzleName);
 
         Cursor cursor =  database.rawQuery(sqlCommand, null);
+        String return_val = null;
 
         //Checks if the pColumnName is correct
         try {
@@ -73,11 +78,11 @@ public class Database {
 
         //Checks if the cursor is empty
         if( cursor != null && cursor.moveToFirst()) {
-            return cursor.getString(cursor.getColumnIndex(pColumnName));
+            return_val = cursor.getString(cursor.getColumnIndex(pColumnName));
         }
 
-        //Grabs the intended value
-        return null;
+        Close(database);
+        return return_val;
     }
 
     /**
@@ -95,5 +100,17 @@ public class Database {
                 DBContract.Puzzle.TABLE_PRIMARY_KEY_NAME, pPuzzleName);
 
         database.execSQL(sqlCmd);
+        Close(database);
+    }
+
+    /**
+     * Checks if the database object is valid and closes the connection
+     *
+     * @param database - Database object
+     */
+    public void Close(SQLiteDatabase database) {
+        if (database != null) {
+            database.close();
+        }
     }
 }

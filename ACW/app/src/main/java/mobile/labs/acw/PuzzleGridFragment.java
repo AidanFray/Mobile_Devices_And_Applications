@@ -40,8 +40,8 @@ public class PuzzleGridFragment extends Fragment {
 
     //Sizing
     float mPadding;
-    int mTileSizeX;
-    int mTileSizeY;
+    float mTileSizeX;
+    float mTileSizeY;
 
     //Controls
     private RelativeLayout mGridLayout;
@@ -50,7 +50,7 @@ public class PuzzleGridFragment extends Fragment {
     int mNumberOfMoves;
     long mStartTime;
     long mPreviousTimeBeforePause;
-    double mPreviousScore = 0; //TODO: Reset
+    double mPreviousScore = 0;
 
 
     //Time update
@@ -61,7 +61,6 @@ public class PuzzleGridFragment extends Fragment {
     private static boolean mTileCurrentlyMoving = false;
     public boolean mTimeStarted = false;
     public boolean mShowResumeMenu = false;
-    public boolean mPaused = false;
     public boolean mResumePopupShowing = false;
 
 
@@ -97,8 +96,6 @@ public class PuzzleGridFragment extends Fragment {
         mGridLayout.post(new Runnable() {
             @Override
             public void run() {
-
-                mGridLayout.getLayoutParams().height = mGridLayout.getWidth();
                 mPadding = (getResources().getDimension(R.dimen.gridCustomBorder) * 2);
             }
         });
@@ -134,13 +131,14 @@ public class PuzzleGridFragment extends Fragment {
     }
 
     /**
-     * TODO
+     * Resets all the boolean values that flag certain circumstances
      */
     private void ResetFlags() {
         mTileCurrentlyMoving = false;
+        mResumePopupShowing = false;
+        mShowResumeMenu = false;
         mPreviousTimeBeforePause = 0;
     }
-
 
     /**
      * Method called from the encasing Activity when a puzzle is selected from the spinner
@@ -239,11 +237,11 @@ public class PuzzleGridFragment extends Fragment {
                     view = new ImageView(getContext());
                     view.setImageBitmap(bmp);
 
-                    view.setMaxWidth(mTileSizeX);
-                    view.setMinimumWidth(mTileSizeX);
+                    view.setMaxWidth((int) mTileSizeX);
+                    view.setMinimumWidth((int) mTileSizeX);
 
-                    view.setMaxHeight(mTileSizeY);
-                    view.setMinimumHeight(mTileSizeY);
+                    view.setMaxHeight((int) mTileSizeY);
+                    view.setMinimumHeight((int) mTileSizeY);
 
                     view.setAdjustViewBounds(false);
                     view.setScaleType(ImageView.ScaleType.FIT_XY);
@@ -254,8 +252,8 @@ public class PuzzleGridFragment extends Fragment {
                     RelativeLayout.LayoutParams param
                             = (RelativeLayout.LayoutParams) view.getLayoutParams();
 
-                    param.leftMargin = (x * mTileSizeX);
-                    param.topMargin = (y * mTileSizeY);
+                    param.leftMargin = (x * (int) mTileSizeX);
+                    param.topMargin = (y * (int) mTileSizeY);
                     param.bottomMargin = 0;
                     param.rightMargin = 0;
 
