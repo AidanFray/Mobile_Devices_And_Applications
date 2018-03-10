@@ -27,7 +27,7 @@ import mobile.labs.acw.R;
  */
 public class Puzzle {
 
-    private final int IMAGE_COMPRESSION_PERCENTAGE = 100;
+    private final int IMAGE_COMPRESSION_PERCENTAGE = 10;
 
     //Member variables
     private String mName;
