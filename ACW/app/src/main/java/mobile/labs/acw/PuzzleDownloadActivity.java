@@ -46,7 +46,7 @@ public class PuzzleDownloadActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_puzzle_download);
-        setTitle("Puzzle Download");
+        setTitle(getString(R.string.puzzle_download_menu_text));
 
         mDownloadLayout = (LinearLayout) findViewById(R.id.puzzle_download_layout);
 

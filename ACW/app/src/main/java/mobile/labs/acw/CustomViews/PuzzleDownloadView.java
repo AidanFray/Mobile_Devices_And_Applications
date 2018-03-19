@@ -114,11 +114,7 @@ public class PuzzleDownloadView extends LinearLayout implements View.OnClickList
         //Loads in the thumbnail once
         if (mBlankThumbnail == null) {
 
-            // Resizes the bitmap
-            BitmapFactory.Options bitmapOptions = new BitmapFactory.Options();
-            bitmapOptions.inSampleSize = 10;
-
-            mBlankThumbnail = BitmapFactory.decodeResource(getResources(), R.drawable.blank_puzzle, bitmapOptions);
+            mBlankThumbnail = BitmapFactory.decodeResource(getResources(), R.drawable.blank_puzzle);
         }
 
         try {

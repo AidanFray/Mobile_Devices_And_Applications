@@ -5,5 +5,22 @@
     <string name="NoPuzzleSelected"><b><i> Por favor,  selecconie un rompecabezas </i></b></string>
     <string name="filter_menu_NeverPlayed">Monstrar nunca de jugado</string>
     <string name="downloading_text_TextView">Monstrar descargado</string>
-    <string name="filter_menu_Clear">Filtro claro</string>
+    <string name="filter_menu_Clear">FILTRO CLARO</string>
+    <string name="downloadView_Highscore_TextView">Puntuación más alta: %s</string>
+    <string name="filter_menu_ShowDownloaded">Mostrar descargado</string>
+    <string name="filter_menu_ShowNotDownloaded">Mostrar sin descargado</string>
+    <string name="filter_menu_puzzleDimen_sub_menu"><b>Dimensiones del rompecabezas</b></string>
+    <string name="filter_menu_puzzle_size">Rompecabezas:</string>
+    <string name="filter_menu_title">Por favor escoja un filtro</string>
+    <string name="highscore_blank_value">Puntuación más alta: 0</string>
+    <string name="puzzleWin_MovesTaken">Movimientos: %s</string>
+    <string name="puzzleWin_Score">Puntuación: %s</string>
+    <string name="puzzleWin_TimeTaken">Tiempo: %.4f segundo</string>
+    <string name="puzzleWin_Title">\"¡Rompecabeza completo! \"</string>
+    <string name="puzzle_download_menu_text">Rompecabeza Descargar</string>
+    <string name="puzzle_solving_button_text">Resolver rompecabezas</string>
+    <string name="scoring_score">Puntuacion: %.0f punto</string>
+    <string name="scoring_score_blank">Puntuación: 0 punto</string>
+    <string name="scoring_time">Tiempo: %.1f segundo</string>
+    <string name="scoring_time_blank">Tiempo: 0.0  segundo</string>
 </resources>
