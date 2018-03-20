@@ -210,19 +210,6 @@ public class PuzzleSolvingActivity extends FragmentActivity
     }
 
     /**
-     * Resets the entire Activity to the initial state
-     */
-    private void resetActivity() {
-        //Resets the grid fragment
-        Intent intent = getIntent();
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-        overridePendingTransition(0, 0);
-        finish();
-        startActivity(intent);
-        finish();
-    }
-
-    /**
      * This method shows the menu containing a single button that resumes the time counter
      * and score incrementation
      */
@@ -239,7 +226,15 @@ public class PuzzleSolvingActivity extends FragmentActivity
     // ## Fragment methods
     @Override
     public void ResetPuzzle() {
-        resetActivity();
+        //Resets the grid fragment
+        Intent intent = getIntent();
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+        overridePendingTransition(0, 0);
+        finish();
+        startActivity(intent);
+        finish();
+
+        this.ResetTimeAndScore();
     }
 
     @Override

@@ -52,7 +52,6 @@ public class PuzzleGridFragment extends Fragment {
     long mPreviousTimeBeforePause;
     double mPreviousScore = 0;
 
-
     //Time update
     private int TIME_REFRESH_PERIOD = 100; //ms
     private Thread mCurrentTimeUpdateThread;
@@ -147,7 +146,6 @@ public class PuzzleGridFragment extends Fragment {
      */
     public void onPuzzleSelection(View pView) {
         stopScoreUpdate();
-        mListener.ResetTimeAndScore();
 
         TextView textView = (TextView) pView;
         String textViewContent = textView.getText().toString();
@@ -160,9 +158,7 @@ public class PuzzleGridFragment extends Fragment {
         }
 
         //Stops creating the view if it's the default menu or it was the same puzzle as before
-        if (!textViewContent.equals(getString(R.string.NoPuzzleSelected)) &&
-                (!samePuzzle)) {
-
+        if (!textViewContent.equals(getString(R.string.NoPuzzleSelected)) && (!samePuzzle)) {
             ResetFlags();
 
             String puzzleName = textViewContent;
@@ -370,8 +366,10 @@ public class PuzzleGridFragment extends Fragment {
                                 public void run() {
                                     double time = calculateTime();
 
-                                    mListener.UpdateTime(time);
-                                    mListener.UpdateScore(calculateScore(time, mNumberOfMoves));
+                                    if (mTimeStarted) {
+                                        mListener.UpdateTime(time);
+                                        mListener.UpdateScore(calculateScore(time, mNumberOfMoves));
+                                    }
                                 }
                             });
                         }
@@ -395,6 +393,8 @@ public class PuzzleGridFragment extends Fragment {
             mCurrentTimeUpdateThread.interrupt();
             mListener.ResetTimeAndScore();
         }
+
+
     }
 
     /**
