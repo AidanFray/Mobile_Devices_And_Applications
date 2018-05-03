@@ -1,13 +1,14 @@
 # Mobile Devices And Applications
-<p align="center">
-  <b>Sliding Puzzle - 08027 ACW - Mobile Devices and Applications</b> 
-</p>
-<p align="center">
-  <img src="https://s14.postimg.org/bp5jr0slt/ic_launcher.png">
-</p>
+<img align="right" src="ACW/app/src/main/res/mipmap-xxxhdpi/ic_launcher.png">
+
+Sliding Puzzle - 08027 ACW - Mobile Devices and Applications
 
 # Description
-TODO
+Sliding puzzle coursework submitted for module 08027 - Mobile Devices and Applications. The goal was to create a sliding puzzle application with dynamically download puzzles.
 
 # Screenshots
-
+<p align="center">
+  <img height=450 src=Screenshots/title_screen.jpg>
+  <img height=450 src=Screenshots/game_screen.jpg>
+  <img height=450 src=Screenshots/download_screen.jpg>
+</p>
