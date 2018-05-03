@@ -8,7 +8,7 @@ Sliding puzzle coursework submitted for module 08027 - Mobile Devices and Applic
 
 # Screenshots
 <p align="center">
-  <img height=450 src=Screenshots/title_screen.jpg>
-  <img height=450 src=Screenshots/game_screen.jpg>
-  <img height=450 src=Screenshots/download_screen.jpg>
+  <img height=510 src=Screenshots/title_screen.jpg>
+  <img height=510 src=Screenshots/game_screen.jpg>
+  <img height=510 src=Screenshots/download_screen.jpg>
 </p>
